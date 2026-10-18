@@ -6,25 +6,38 @@
 const PrecedentManager = {
   async loadLibrary() {
     const container = document.getElementById("precedents-container");
+    if (!container) return;
     container.innerHTML = `<div style="text-align:center; padding: 20px;">Loading historical precedent knowledge base...</div>`;
 
-    const search = document.getElementById("prec-search-input").value.trim();
-    const category = document.getElementById("prec-filter-category").value;
-    const reuse = document.getElementById("prec-filter-reuse").value;
-
-    const params = new URLSearchParams();
-    if (search) params.append("search", search);
-    if (category !== "All") params.append("category", category);
-    if (reuse !== "All") params.append("reuse", reuse);
-
     try {
-      const res = await fetch(`/api/precedents?${params.toString()}`);
-      const data = await res.json();
+      const search = document.getElementById("prec-search-input") ? document.getElementById("prec-search-input").value.trim() : "";
+      const category = document.getElementById("prec-filter-category") ? document.getElementById("prec-filter-category").value : "All";
+      const reuse = document.getElementById("prec-filter-reuse") ? document.getElementById("prec-filter-reuse").value : "All";
 
-      if (data.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--text-muted);">No historical precedents match your search filters.</div>`;
-        return;
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (category !== "All") params.append("category", category);
+      if (reuse !== "All") params.append("reuse", reuse);
+
+      let data = null;
+    try {
+      if (!window.MockStore || !MockStore.isStaticMode) {
+        const url = App.getApiUrl(`/api/precedents?${params.toString()}`);
+        const res = await fetch(url, { headers: App.getAuthHeaders() });
+        if (res.ok) data = await res.json();
       }
+    } catch (e) {
+      console.warn("Precedents API not reachable, falling back to mock precedents");
+    }
+
+    if (!data && window.MockStore) {
+      data = MockStore.precedents || [];
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding: 30px; color: var(--text-muted);">No historical precedents match your search filters.</div>`;
+      return;
+    }
 
       container.innerHTML = data.map(p => {
         let tagClass = "badge-approved";
@@ -88,9 +101,10 @@ const PrecedentManager = {
 
   async updateReuseTag(precedentId, newTag) {
     try {
-      const res = await fetch(`/api/precedents/${precedentId}/reuse`, {
+      const url = App.getApiUrl(`/api/precedents/${precedentId}/reuse`);
+      const res = await fetch(url, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ reuse_recommendation: newTag })
       });
       const data = await res.json();
@@ -133,9 +147,10 @@ const PrecedentManager = {
     }
 
     try {
-      const res = await fetch("/api/precedents", {
+      const url = App.getApiUrl("/api/precedents");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload)
       });
       const data = await res.json();

@@ -3,7 +3,7 @@
  * Provides full interactive fallback when backend is not running on localhost.
  */
 
-const MockStore = {
+const MockStore = window.MockStore = {
   isStaticMode: window.location.hostname.includes("github.io") || window.location.protocol === "file:",
 
   stats: {

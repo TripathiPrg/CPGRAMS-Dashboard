@@ -10,19 +10,21 @@ const RegisterManager = {
 
   async loadRegister() {
     const tbody = document.getElementById("register-tbody");
+    if (!tbody) return;
     tbody.innerHTML = `<tr><td colspan="9" style="text-align: center;">Loading cases...</td></tr>`;
 
-    const search = document.getElementById("reg-search-input").value.trim();
-    const status = document.getElementById("reg-filter-status").value;
-    const category = document.getElementById("reg-filter-category").value;
-    const priority = document.getElementById("reg-filter-priority").value;
-    const sample = document.getElementById("reg-filter-sample").value;
+    try {
+      const search = document.getElementById("reg-search-input") ? document.getElementById("reg-search-input").value.trim() : "";
+      const status = document.getElementById("reg-filter-status") ? document.getElementById("reg-filter-status").value : "All";
+      const category = document.getElementById("reg-filter-category") ? document.getElementById("reg-filter-category").value : "All";
+      const priority = document.getElementById("reg-filter-priority") ? document.getElementById("reg-filter-priority").value : "All";
+      const sample = document.getElementById("reg-filter-sample") ? document.getElementById("reg-filter-sample").value : "All";
 
-    const params = new URLSearchParams({
-      page: this.currentPage,
-      page_size: this.pageSize,
-      unmask_pii: !App.maskPII
-    });
+      const params = new URLSearchParams({
+        page: this.currentPage,
+        page_size: this.pageSize,
+        unmask_pii: !App.maskPII
+      });
 
     if (search) params.append("search", search);
     if (status !== "All") params.append("status", status);

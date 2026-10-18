@@ -8,8 +8,9 @@ const RoutingManager = {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Loading routing rules...</td></tr>`;
 
     try {
-      const res = await fetch("/api/settings/routing-rules");
-      const rules = await res.json();
+      const url = App.getApiUrl("/api/settings/routing-rules");
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
+      const rules = res.ok ? await res.json() : (window.MockStore ? MockStore.routingRules : []);
 
       tbody.innerHTML = rules.map(r => `
         <tr>
@@ -55,9 +56,10 @@ const RoutingManager = {
     }
 
     try {
-      const res = await fetch("/api/settings/routing-rules", {
+      const url = App.getApiUrl("/api/settings/routing-rules");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error("Failed to save rule");
@@ -72,7 +74,8 @@ const RoutingManager = {
   async deleteRule(id) {
     if (!confirm("Are you sure you want to delete this routing rule?")) return;
     try {
-      await fetch(`/api/settings/routing-rules/${id}`, { method: "DELETE" });
+      const url = App.getApiUrl(`/api/settings/routing-rules/${id}`);
+      await fetch(url, { method: "DELETE", headers: App.getAuthHeaders() });
       this.loadRules();
     } catch (e) {
       alert(`Error: ${e.message}`);
@@ -89,7 +92,9 @@ const SettingsManager = {
 
   async loadSystemDiagnostics() {
     try {
-      const res = await fetch("/api/settings/system-info");
+      const url = App.getApiUrl("/api/settings/system-info");
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
+      if (!res.ok) return;
       const info = await res.json();
       document.getElementById("diag-host").innerText = `${info.binding_host} (Local Only)`;
       document.getElementById("diag-port").innerText = info.binding_port;
@@ -106,7 +111,9 @@ const SettingsManager = {
     tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Loading backups...</td></tr>`;
 
     try {
-      const res = await fetch("/api/settings/backups");
+      const url = App.getApiUrl("/api/settings/backups");
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const backups = await res.json();
 
       if (backups.length === 0) {
@@ -125,13 +132,14 @@ const SettingsManager = {
         </tr>
       `).join("");
     } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="4" style="color: var(--meity-red);">Error: ${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">Local agent offline or no snapshots.</td></tr>`;
     }
   },
 
   async createBackup() {
     try {
-      const res = await fetch("/api/settings/backups/create", { method: "POST" });
+      const url = App.getApiUrl("/api/settings/backups/create");
+      const res = await fetch(url, { method: "POST", headers: App.getAuthHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Backup failed");
       alert(`Snapshot '${data.filename}' created successfully (${data.size_kb} KB)!`);
@@ -146,9 +154,10 @@ const SettingsManager = {
     if (!conf) return;
 
     try {
-      const res = await fetch("/api/settings/backups/restore", {
+      const url = App.getApiUrl("/api/settings/backups/restore");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ filename })
       });
       const data = await res.json();
@@ -167,7 +176,9 @@ const SettingsManager = {
     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Loading audit logs...</td></tr>`;
 
     try {
-      const res = await fetch(`/api/settings/audit-logs?event_type=${eventType}&limit=60`);
+      const url = App.getApiUrl(`/api/settings/audit-logs?event_type=${eventType}&limit=60`);
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const logs = await res.json();
 
       if (logs.length === 0) {
@@ -185,7 +196,7 @@ const SettingsManager = {
         </tr>
       `).join("");
     } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="5" style="color: var(--meity-red);">Error: ${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Audit log viewing requires local agent connection.</td></tr>`;
     }
   }
 };

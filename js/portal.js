@@ -12,7 +12,8 @@ const PortalManager = {
     detailsBox.innerHTML = `<em>Launching controlled browser session for official login... Please wait.</em>`;
     
     try {
-      const res = await fetch("/api/portal/launch", { method: "POST" });
+      const url = App.getApiUrl("/api/portal/launch");
+      const res = await fetch(url, { method: "POST", headers: App.getAuthHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Launch failed");
 
@@ -28,7 +29,8 @@ const PortalManager = {
 
   async checkStatus() {
     try {
-      const res = await fetch("/api/portal/status");
+      const url = App.getApiUrl("/api/portal/status");
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
       const data = await res.json();
       
       const badge = document.getElementById("portal-session-badge");
@@ -65,9 +67,10 @@ const PortalManager = {
 
   async navigate(destination) {
     try {
-      const res = await fetch("/api/portal/navigate", {
+      const url = App.getApiUrl("/api/portal/navigate");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ destination })
       });
       const data = await res.json();
@@ -88,7 +91,8 @@ const PortalManager = {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Extracting visible records from browser table...</td></tr>`;
 
     try {
-      const res = await fetch("/api/portal/inspect", { method: "POST" });
+      const url = App.getApiUrl("/api/portal/inspect");
+      const res = await fetch(url, { method: "POST", headers: App.getAuthHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Inspection failed");
 
@@ -142,9 +146,10 @@ const PortalManager = {
     }
 
     try {
-      const res = await fetch("/api/portal/import", {
+      const url = App.getApiUrl("/api/portal/import");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(selected)
       });
       const data = await res.json();
@@ -159,7 +164,8 @@ const PortalManager = {
 
   async closeSession() {
     try {
-      await fetch("/api/portal/close", { method: "POST" });
+      const url = App.getApiUrl("/api/portal/close");
+      await fetch(url, { method: "POST", headers: App.getAuthHeaders() });
       this.checkStatus();
     } catch (e) {
       console.error("Close session error", e);

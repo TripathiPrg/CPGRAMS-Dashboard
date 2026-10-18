@@ -5,8 +5,11 @@
 const ReportsManager = {
   async loadReports() {
     try {
-      const res = await fetch("/api/reports/summary");
-      const data = await res.json();
+      const url = App.getApiUrl("/api/reports/summary");
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
+      const data = res.ok ? await res.json() : null;
+
+      if (!data) return;
 
       // 1. Ageing breakdown
       const ageing = data.ageing_breakdown;

@@ -55,6 +55,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "no-referrer"
+        # Support Chrome/Edge Private Network Access (PNA) preflight from GitHub Pages
+        if request.headers.get("access-control-request-private-network") == "true":
+            response.headers["Access-Control-Allow-Private-Network"] = "true"
         return response
 
 app.add_middleware(SecurityHeadersMiddleware)

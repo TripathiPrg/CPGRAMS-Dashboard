@@ -34,6 +34,7 @@ const App = {
   async checkBridgeConnection() {
     const pillText = document.getElementById("bridge-pill-text");
     const pillDot = document.getElementById("bridge-pill-dot");
+    const sidebarStatus = document.getElementById("sidebar-status-text");
 
     try {
       const url = this.getApiUrl("/api/bridge/status");
@@ -45,6 +46,9 @@ const App = {
           pillDot.style.background = "#27ae60";
           pillDot.style.boxShadow = "0 0 6px rgba(39, 174, 96, 0.6)";
         }
+        if (sidebarStatus) {
+          sidebarStatus.innerHTML = '<span style="color: #2ecc71;">●</span> 127.0.0.1:8000 • Live Agent';
+        }
         return true;
       }
     } catch (e) {
@@ -53,6 +57,9 @@ const App = {
       if (pillDot) {
         pillDot.style.background = "#e67e22";
         pillDot.style.boxShadow = "none";
+      }
+      if (sidebarStatus) {
+        sidebarStatus.innerHTML = '<span style="color: #f39c12;">●</span> Standalone / Demo Mode';
       }
     }
     return false;
@@ -180,7 +187,7 @@ const App = {
     let data = null;
     try {
       if (!window.MockStore || !MockStore.isStaticMode) {
-        const res = await fetch("/api/dashboard/stats");
+        const res = await fetch(this.getApiUrl("/api/dashboard/stats"));
         if (res.ok) {
           data = await res.json();
         }

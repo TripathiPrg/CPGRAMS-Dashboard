@@ -34,8 +34,10 @@ const IntakeManager = {
     formData.append("file", file);
 
     try {
-      const res = await fetch("/api/intake/upload", {
+      const uploadUrl = App.getApiUrl("/api/intake/upload");
+      const res = await fetch(uploadUrl, {
         method: "POST",
+        headers: App.getAuthHeaders(),
         body: formData
       });
       const data = await res.json();
@@ -44,9 +46,10 @@ const IntakeManager = {
       if (data.is_batch) {
         alert(`Detected tabular batch with ${data.batch_count} records. Importing batch into register...`);
         // Batch auto-import
-        await fetch("/api/portal/import", {
+        const importUrl = App.getApiUrl("/api/portal/import");
+        await fetch(importUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify(data.batch_records)
         });
         alert("Batch imported successfully!");
@@ -73,9 +76,10 @@ const IntakeManager = {
     }
 
     try {
-      const res = await fetch("/api/intake/parse-text", {
+      const url = App.getApiUrl("/api/intake/parse-text");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ text })
       });
       const data = await res.json();
@@ -146,9 +150,10 @@ const IntakeManager = {
     }
 
     try {
-      const res = await fetch("/api/intake/confirm", {
+      const url = App.getApiUrl("/api/intake/confirm");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload)
       });
       const data = await res.json();

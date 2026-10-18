@@ -134,7 +134,8 @@ const CaseWorkspace = {
 
   async refreshAnalysis() {
     try {
-      const res = await fetch(`/api/grievances/${App.currentCaseId}/analyze`, { method: "POST" });
+      const url = App.getApiUrl(`/api/grievances/${App.currentCaseId}/analyze`);
+      const res = await fetch(url, { method: "POST", headers: App.getAuthHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Analysis failed");
       this.renderAnalysis(data);
@@ -169,9 +170,10 @@ const CaseWorkspace = {
     };
 
     try {
-      const res = await fetch(`/api/grievances/${App.currentCaseId}/analysis`, {
+      const url = App.getApiUrl(`/api/grievances/${App.currentCaseId}/analysis`);
+      const res = await fetch(url, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload)
       });
       const data = await res.json();
@@ -193,9 +195,10 @@ const CaseWorkspace = {
     const queryText = `${g.subject} ${g.requested_relief || ''} ${g.grievance_text}`;
 
     try {
-      const res = await fetch("/api/precedents/search", {
+      const url = App.getApiUrl("/api/precedents/search");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           query: queryText,
           category: null,
@@ -313,9 +316,10 @@ const CaseWorkspace = {
     const note = prompt("Enter follow-up reminder details:");
     if (!note) return;
     try {
-      const res = await fetch(`/api/correspondence/${corrId}/reminder`, {
+      const url = App.getApiUrl(`/api/correspondence/${corrId}/reminder`);
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ reminder_note: note })
       });
       const data = await res.json();

@@ -8,7 +8,9 @@ const CorrespondenceManager = {
     tbody.innerHTML = `<tr><td colspan="8" style="text-align: center;">Loading tracked calls for input...</td></tr>`;
 
     try {
-      const res = await fetch("/api/correspondence");
+      const url = App.getApiUrl("/api/correspondence");
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const list = await res.json();
 
       if (list.length === 0) {
@@ -33,7 +35,7 @@ const CorrespondenceManager = {
       `).join("");
 
     } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="8" style="color: var(--meity-red);">Error: ${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Local agent offline or no correspondence records found.</td></tr>`;
     }
   },
 
@@ -53,9 +55,10 @@ const CorrespondenceManager = {
     };
 
     try {
-      const res = await fetch("/api/correspondence", {
+      const url = App.getApiUrl("/api/correspondence");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error("Failed to add inquiry");
@@ -69,9 +72,10 @@ const CorrespondenceManager = {
     const note = prompt("Enter follow-up reminder note:");
     if (!note) return;
     try {
-      await fetch(`/api/correspondence/${id}/reminder`, {
+      const url = App.getApiUrl(`/api/correspondence/${id}/reminder`);
+      await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ reminder_note: note })
       });
       this.loadMaster();
@@ -84,9 +88,10 @@ const CorrespondenceManager = {
     const summary = prompt("Enter summary of comments/inputs received:");
     if (!summary) return;
     try {
-      await fetch(`/api/correspondence/${id}`, {
+      const url = App.getApiUrl(`/api/correspondence/${id}`);
+      await fetch(url, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           status: "Response Received",
           date_received: new Date().toISOString().split("T")[0],
