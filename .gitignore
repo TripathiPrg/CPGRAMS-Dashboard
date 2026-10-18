@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Pytest & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local Application Data (Security & Privacy Safeguards)
+data/cpgrams_workbench.db
+data/cpgrams_workbench.db-journal
+data/uploads/*
+!data/uploads/.gitkeep
+data/exports/*
+!data/exports/.gitkeep
+data/backups/*
+!data/backups/.gitkeep
+
+# Logs and environment
+*.log
+.env
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/

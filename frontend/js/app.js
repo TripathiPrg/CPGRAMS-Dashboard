@@ -1,0 +1,136 @@
+/**
+ * CPGRAMS Personal Workbench - Core SPA Application Engine
+ * Ministry of Electronics and Information Technology (MeitY)
+ */
+
+const App = {
+  currentView: "dashboard",
+  maskPII: true,
+  currentCaseId: null,
+
+  init() {
+    this.setupNavigation();
+    this.setupPIIToggle();
+    this.loadDashboardData();
+  },
+
+  setupNavigation() {
+    document.querySelectorAll(".sidebar-nav .nav-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const view = item.getAttribute("data-view");
+        this.switchView(view);
+      });
+    });
+  },
+
+  switchView(viewName) {
+    this.currentView = viewName;
+
+    // Update sidebar active state
+    document.querySelectorAll(".sidebar-nav .nav-item").forEach(item => {
+      if (item.getAttribute("data-view") === viewName) {
+        item.classList.add("active");
+      } else {
+        item.classList.remove("active");
+      }
+    });
+
+    // Update main section views
+    document.querySelectorAll(".view-section").forEach(sec => {
+      sec.classList.remove("active-view");
+    });
+    const targetSec = document.getElementById(`view-${viewName}`);
+    if (targetSec) {
+      targetSec.classList.add("active-view");
+    }
+
+    // Set Top Header Title
+    const titleMap = {
+      dashboard: "Dashboard Overview",
+      portal: "CPGRAMS Portal Assistant",
+      intake: "Grievance Intake & Document Processing",
+      register: "Grievance Register",
+      detail: "Case Examination & Drafting Workspace",
+      precedents: "Historical Disposed Grievance Library",
+      routing: "Departmental Routing Assistant",
+      correspondence: "Departmental Input Tracker",
+      reports: "Operational Reports & Analytics",
+      settings: "Settings, Security & Knowledge Management"
+    };
+    document.getElementById("current-view-title").innerText = titleMap[viewName] || "Workbench";
+
+    // Trigger view-specific loads
+    if (viewName === "dashboard") this.loadDashboardData();
+    else if (viewName === "portal") PortalManager.checkStatus();
+    else if (viewName === "register") RegisterManager.loadRegister();
+    else if (viewName === "precedents") PrecedentManager.loadLibrary();
+    else if (viewName === "routing") RoutingManager.loadRules();
+    else if (viewName === "correspondence") CorrespondenceManager.loadMaster();
+    else if (viewName === "reports") ReportsManager.loadReports();
+    else if (viewName === "settings") SettingsManager.loadSettings();
+  },
+
+  setupPIIToggle() {
+    const btn = document.getElementById("pii-toggle-btn");
+    const label = document.getElementById("pii-toggle-text");
+    btn.addEventListener("click", () => {
+      this.maskPII = !this.maskPII;
+      if (this.maskPII) {
+        btn.classList.remove("active");
+        label.innerText = "Mask PII: ON";
+      } else {
+        btn.classList.add("active");
+        label.innerText = "Mask PII: OFF";
+      }
+      // Reload current register or detail if open
+      if (this.currentView === "register") RegisterManager.loadRegister();
+      else if (this.currentView === "detail" && this.currentCaseId) CaseWorkspace.loadCase(this.currentCaseId);
+    });
+  },
+
+  async loadDashboardData() {
+    try {
+      const res = await fetch("/api/dashboard/stats");
+      const data = await res.json();
+
+      document.getElementById("stat-total").innerText = data.total_grievances;
+      document.getElementById("stat-new").innerText = data.new_grievances;
+      document.getElementById("stat-pending").innerText = data.pending_grievances;
+      document.getElementById("stat-disposed").innerText = data.disposed_grievances;
+      document.getElementById("stat-inputs").innerText = data.awaiting_inputs;
+      document.getElementById("stat-drafts").innerText = data.drafts_awaiting_review;
+      document.getElementById("stat-approaching").innerText = data.approaching_deadlines;
+      document.getElementById("stat-urgent").innerText = data.urgent_attention;
+
+      document.getElementById("dash-sample-count").innerText = data.sample_records_count;
+      document.getElementById("dash-real-count").innerText = data.real_records_count;
+
+      // Render recent activities
+      const tbody = document.getElementById("dash-activity-tbody");
+      if (!data.recent_activities || data.recent_activities.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No activity recorded yet.</td></tr>`;
+      } else {
+        tbody.innerHTML = data.recent_activities.map(a => `
+          <tr>
+            <td style="white-space: nowrap; font-size: 11.5px; color: var(--text-muted);">${new Date(a.timestamp).toLocaleString()}</td>
+            <td><span class="badge badge-draft">${a.event_type}</span></td>
+            <td><strong>${a.entity_type}</strong></td>
+            <td>${a.details}</td>
+            <td style="font-size: 11.5px; color: var(--text-muted);">${a.actor}</td>
+          </tr>
+        `).join("");
+      }
+    } catch (e) {
+      console.error("Failed to load dashboard stats", e);
+    }
+  },
+
+  toast(message, type = "info") {
+    // Standard subtle toast notice
+    alert(message);
+  }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  App.init();
+});
