@@ -14,8 +14,20 @@ const App = {
   init() {
     this.setupNavigation();
     this.setupPIIToggle();
-    this.checkBridgeConnection();
-    this.loadDashboardData();
+
+    // 1. Instant zero-latency rendering (0ms delay)
+    if (window.MockStore) {
+      this.dashboardGrievances = window.MockStore.grievances || [];
+      this.renderDashboardStats(window.MockStore.stats);
+      this.filterDashboardList(this.currentDashFilter || "all", false);
+    }
+
+    // 2. Non-blocking connectivity probe
+    this.checkBridgeConnection().then(connected => {
+      if (connected) {
+        this.loadDashboardDataFromApi();
+      }
+    });
   },
 
   getApiUrl(path) {
@@ -37,8 +49,11 @@ const App = {
     const sidebarStatus = document.getElementById("sidebar-status-text");
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
       const url = this.getApiUrl("/api/bridge/status");
-      const res = await fetch(url, { method: "GET" });
+      const res = await fetch(url, { method: "GET", signal: controller.signal });
+      clearTimeout(timeoutId);
       if (res.ok) {
         this.isLocalAgentConnected = true;
         if (pillText) pillText.innerText = "Local Agent: Connected (127.0.0.1:8000)";
@@ -52,15 +67,16 @@ const App = {
         return true;
       }
     } catch (e) {
-      this.isLocalAgentConnected = false;
-      if (pillText) pillText.innerText = "Local Agent: Offline (Demo Mode)";
-      if (pillDot) {
-        pillDot.style.background = "#e67e22";
-        pillDot.style.boxShadow = "none";
-      }
-      if (sidebarStatus) {
-        sidebarStatus.innerHTML = '<span style="color: #f39c12;">●</span> Standalone / Demo Mode';
-      }
+      // Offline / Demo mode
+    }
+    this.isLocalAgentConnected = false;
+    if (pillText) pillText.innerText = "Local Agent: Offline (Demo Mode)";
+    if (pillDot) {
+      pillDot.style.background = "#e67e22";
+      pillDot.style.boxShadow = "none";
+    }
+    if (sidebarStatus) {
+      sidebarStatus.innerHTML = '<span style="color: #f39c12;">●</span> Standalone / Demo Mode';
     }
     return false;
   },
@@ -186,38 +202,27 @@ const App = {
   dashboardGrievances: [],
   currentDashFilter: "all",
 
-  async loadDashboardData() {
-    let data = null;
-    try {
-      if (!window.MockStore || !MockStore.isStaticMode) {
-        const res = await fetch(this.getApiUrl("/api/dashboard/stats"));
-        if (res.ok) {
-          data = await res.json();
-        }
-      }
-    } catch (e) {
-      console.warn("API not reachable, switching to static demo mode");
-    }
+  renderDashboardStats(data) {
+    if (!data) return;
+    const setVal = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = (val !== undefined && val !== null) ? val : 0;
+    };
+    setVal("stat-total", data.total_grievances);
+    setVal("stat-new", data.new_grievances);
+    setVal("stat-pending", data.pending_grievances);
+    setVal("stat-disposed", data.disposed_grievances);
+    setVal("stat-inputs", data.awaiting_inputs);
+    setVal("stat-drafts", data.drafts_awaiting_review);
+    setVal("stat-approaching", data.approaching_deadlines);
+    setVal("stat-urgent", data.urgent_attention);
 
-    if (!data && window.MockStore) {
-      data = MockStore.stats;
-    }
+    setVal("dash-sample-count", data.sample_records_count);
+    setVal("dash-real-count", data.real_records_count);
 
-    if (data) {
-      document.getElementById("stat-total").innerText = data.total_grievances;
-      document.getElementById("stat-new").innerText = data.new_grievances;
-      document.getElementById("stat-pending").innerText = data.pending_grievances;
-      document.getElementById("stat-disposed").innerText = data.disposed_grievances;
-      document.getElementById("stat-inputs").innerText = data.awaiting_inputs;
-      document.getElementById("stat-drafts").innerText = data.drafts_awaiting_review;
-      document.getElementById("stat-approaching").innerText = data.approaching_deadlines;
-      document.getElementById("stat-urgent").innerText = data.urgent_attention;
-
-      document.getElementById("dash-sample-count").innerText = data.sample_records_count;
-      document.getElementById("dash-real-count").innerText = data.real_records_count;
-
-      const tbody = document.getElementById("dash-activity-tbody");
-      if (!data.recent_activities || data.recent_activities.length === 0) {
+    const tbody = document.getElementById("dash-activity-tbody");
+    if (tbody && data.recent_activities) {
+      if (data.recent_activities.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No activity recorded yet.</td></tr>`;
       } else {
         tbody.innerHTML = data.recent_activities.map(a => `
@@ -231,27 +236,53 @@ const App = {
         `).join("");
       }
     }
+  },
 
-    // Load operational grievances for the interactive table
-    let cases = null;
+  async loadDashboardDataFromApi() {
     try {
-      if (!window.MockStore || !MockStore.isStaticMode) {
-        const resCases = await fetch(this.getApiUrl("/api/grievances?page_size=50&unmask_pii=" + !this.maskPII), { headers: this.getAuthHeaders() });
-        if (resCases.ok) {
-          const cData = await resCases.json();
-          cases = cData.items;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const res = await fetch(this.getApiUrl("/api/dashboard/stats"), {
+        signal: controller.signal,
+        headers: this.getAuthHeaders()
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        this.renderDashboardStats(data);
+      }
+
+      const cCtrl = new AbortController();
+      const cTimeout = setTimeout(() => cCtrl.abort(), 2500);
+      const resCases = await fetch(this.getApiUrl("/api/grievances?page_size=50&unmask_pii=" + !this.maskPII), {
+        signal: cCtrl.signal,
+        headers: this.getAuthHeaders()
+      });
+      clearTimeout(cTimeout);
+      if (resCases.ok) {
+        const cData = await resCases.json();
+        if (cData && cData.items && cData.items.length > 0) {
+          this.dashboardGrievances = cData.items;
+          this.filterDashboardList(this.currentDashFilter || "all", false);
         }
       }
     } catch (e) {
-      console.warn("Could not fetch cases from backend, using mock cases");
+      console.warn("Could not fetch latest cases from backend:", e.message);
+    }
+  },
+
+  async loadDashboardData() {
+    // 1. Instant Synchronous Paint
+    if (window.MockStore) {
+      this.dashboardGrievances = window.MockStore.grievances || [];
+      this.renderDashboardStats(window.MockStore.stats);
+      this.filterDashboardList(this.currentDashFilter || "all", false);
     }
 
-    if (!cases && window.MockStore) {
-      cases = MockStore.grievances;
+    // 2. Fetch from backend if agent is connected
+    if (this.isLocalAgentConnected) {
+      await this.loadDashboardDataFromApi();
     }
-
-    this.dashboardGrievances = cases || [];
-    this.filterDashboardList(this.currentDashFilter || "all", false);
   },
 
   filterDashboardList(filterType, scroll = true) {
