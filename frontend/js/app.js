@@ -89,10 +89,23 @@ const App = {
   },
 
   async loadDashboardData() {
+    let data = null;
     try {
-      const res = await fetch("/api/dashboard/stats");
-      const data = await res.json();
+      if (!window.MockStore || !MockStore.isStaticMode) {
+        const res = await fetch("/api/dashboard/stats");
+        if (res.ok) {
+          data = await res.json();
+        }
+      }
+    } catch (e) {
+      console.warn("API not reachable, switching to static demo mode");
+    }
 
+    if (!data && window.MockStore) {
+      data = MockStore.stats;
+    }
+
+    if (data) {
       document.getElementById("stat-total").innerText = data.total_grievances;
       document.getElementById("stat-new").innerText = data.new_grievances;
       document.getElementById("stat-pending").innerText = data.pending_grievances;
@@ -105,7 +118,6 @@ const App = {
       document.getElementById("dash-sample-count").innerText = data.sample_records_count;
       document.getElementById("dash-real-count").innerText = data.real_records_count;
 
-      // Render recent activities
       const tbody = document.getElementById("dash-activity-tbody");
       if (!data.recent_activities || data.recent_activities.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No activity recorded yet.</td></tr>`;
@@ -120,8 +132,6 @@ const App = {
           </tr>
         `).join("");
       }
-    } catch (e) {
-      console.error("Failed to load dashboard stats", e);
     }
   },
 

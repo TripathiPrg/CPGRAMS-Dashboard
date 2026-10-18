@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPGRAMS Personal Workbench — AI & Emerging Technologies Division, MeitY</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <svg class="emblem" viewBox="0 0 24 24" width="36" height="36" fill="#f39c12">
+          <path d="M12 2L2 7v7c0 5.55 3.84 10.74 10 12 6.16-1.26 10-6.45 10-12V7L12 2zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V8.3l7-3.11v7.8z"/>
+        </svg>
+        <div class="sidebar-header-text">
+          <h1>CPGRAMS WORKBENCH</h1>
+          <p>MeitY • AI & Emerging Tech</p>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="nav-item active" data-view="dashboard">
+          <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+          <span>Dashboard Home</span>
+        </li>
+        <li class="nav-item" data-view="portal">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          <span>CPGRAMS Assistant</span>
+        </li>
+        <li class="nav-item" data-view="intake">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-6-8l-4 4h3v4h2v-4h3l-4-4z"/></svg>
+          <span>Document Intake</span>
+        </li>
+        <li class="nav-item" data-view="register">
+          <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm8 16H5v-2h6v2zm0-4H5v-2h6v2zm0-4H5V9h6v2zm0-4H5V5h6v2zm8 12h-6v-2h6v2zm0-4h-6v-2h6v2zm0-4h-6V9h6v2zm0-4h-6V5h6v2z"/></svg>
+          <span>Grievance Register</span>
+        </li>
+        <li class="nav-item" data-view="precedents">
+          <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+          <span>Disposed Library</span>
+        </li>
+        <li class="nav-item" data-view="routing">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <span>Routing Assistant</span>
+        </li>
+        <li class="nav-item" data-view="correspondence">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <span>Input Tracker</span>
+        </li>
+        <li class="nav-item" data-view="reports">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          <span>Reports & Analytics</span>
+        </li>
+        <li class="nav-item" data-view="settings">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span>Settings & Audit</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div>127.0.0.1:8000 • Local Offline</div>
+        <div style="margin-top: 3px; font-weight: 600; color: #f39c12;">CONFIDENTIAL GOVT WORKSPACE</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      <!-- Top Application Bar -->
+      <header class="top-header">
+        <div class="top-header-left">
+          <h2 id="current-view-title">Dashboard Overview</h2>
+          <span class="badge-division">AI & Emerging Technologies Division</span>
+        </div>
+        <div class="top-header-right">
+          <div class="security-pill">
+            <span class="security-pill-dot"></span>
+            <span>Local Offline Mode</span>
+          </div>
+          <button id="pii-toggle-btn" class="pii-toggle-btn" title="Toggle Privacy Masking for Applicant Names & Contacts">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            <span id="pii-toggle-text">Mask PII: ON</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Workspace Body -->
+      <div class="workspace-content">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: DASHBOARD HOME (MODULE A) -->
+        <!-- ========================================== -->
+        <section id="view-dashboard" class="view-section active-view">
+          <!-- Sample Data Distinction Banner -->
+          <div class="alert-banner alert-sample">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <div>
+              <strong>Government Workflow Notice:</strong> All figures below are derived strictly from local records. 
+              Currently hosting <span id="dash-real-count" style="font-weight:700;">0</span> verified portal records and <span id="dash-sample-count" style="font-weight:700;">4</span> synthetic MeitY test cases. 
+              Synthetic test records are clearly distinguished from portal data.
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Grievances</div>
+              <div class="stat-value" id="stat-total">0</div>
+              <div class="stat-subtitle">All active & disposed cases</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">New Grievances</div>
+              <div class="stat-value" id="stat-new">0</div>
+              <div class="stat-subtitle">Awaiting initial action</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Pending Examination</div>
+              <div class="stat-value" id="stat-pending">0</div>
+              <div class="stat-subtitle">Under active review</div>
+            </div>
+            <div class="stat-card disposed">
+              <div class="stat-label">Disposed / Approved</div>
+              <div class="stat-value" id="stat-disposed">0</div>
+              <div class="stat-subtitle">Disposals completed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Awaiting Dept Inputs</div>
+              <div class="stat-value" id="stat-inputs">0</div>
+              <div class="stat-subtitle">Inter-divisional calls</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Drafts Under Review</div>
+              <div class="stat-value" id="stat-drafts">0</div>
+              <div class="stat-subtitle">Ready for officer check</div>
+            </div>
+            <div class="stat-card approaching">
+              <div class="stat-label">Approaching Deadline</div>
+              <div class="stat-value" id="stat-approaching">0</div>
+              <div class="stat-subtitle">&lt; 5 days remaining</div>
+            </div>
+            <div class="stat-card urgent">
+              <div class="stat-label">Urgent / Overdue</div>
+              <div class="stat-value" id="stat-urgent">0</div>
+              <div class="stat-subtitle">Requires immediate action</div>
+            </div>
+          </div>
+
+          <!-- Quick Action Row -->
+          <div class="card" style="padding: 14px 20px;">
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <span style="font-size: 13px; font-weight: 700; color: var(--meity-navy); margin-right: 8px;">Quick Operations:</span>
+              <button class="btn btn-primary" onclick="App.switchView('portal')">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                Launch CPGRAMS Assistant
+              </button>
+              <button class="btn btn-outline" onclick="App.switchView('intake')">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                Upload Grievance Document
+              </button>
+              <button class="btn btn-outline" onclick="App.switchView('precedents')">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                Search Disposed Library
+              </button>
+              <a href="/api/reports/export/xlsx" class="btn btn-outline">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Export Register (Excel)
+              </a>
+            </div>
+          </div>
+
+          <!-- Recent Audit Operations Feed -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Local Activities & Audit Trail</div>
+              <button class="btn btn-outline" style="font-size: 11.5px; padding: 4px 8px;" onclick="App.switchView('settings')">View All Security Logs</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Event Type</th>
+                    <th>Entity</th>
+                    <th>Details</th>
+                    <th>Actor</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-activity-tbody">
+                  <tr><td colspan="5" style="text-align:center;">Loading recent activities...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: CPGRAMS PORTAL ASSISTANT (MODULE B) -->
+        <!-- ========================================== -->
+        <section id="view-portal" class="view-section">
+          <div class="alert-banner alert-info">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <div>
+              <strong>Officer-in-the-Loop Browser Integration:</strong> 
+              The assistant launches your installed system Chrome/Edge browser directly to the official CPGRAMS login page.
+              <strong>You authenticate yourself</strong> with your official credentials, CAPTCHA, or Parichay.
+              The application never stores or asks for your password, and never performs automated disposals or transfers on the portal.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Browser Session Status</div>
+              <span id="portal-session-badge" class="badge badge-sample">CHECKING STATUS</span>
+            </div>
+            <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+              <button id="btn-launch-browser" class="btn btn-primary" onclick="PortalManager.launch()">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                Launch Controlled Browser
+              </button>
+              <button id="btn-check-status" class="btn btn-outline" onclick="PortalManager.checkStatus()">
+                Refresh Connection Status
+              </button>
+              <button id="btn-close-browser" class="btn btn-danger" onclick="PortalManager.closeSession()">
+                Close Browser Session
+              </button>
+            </div>
+            <div id="portal-status-details" style="margin-top: 14px; font-size: 13px; color: var(--text-muted); background: #f8fafc; padding: 12px; border-radius: 6px;">
+              Session not launched yet. Click "Launch Controlled Browser" to begin.
+            </div>
+          </div>
+
+          <!-- Navigation Helpers -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Authorized Portal Navigation</div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+              Quickly direct the active browser session to your authorized operational areas once authenticated:
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-outline" onclick="PortalManager.navigate('operational_desk')">
+                Go to Operational Desk
+              </button>
+              <button class="btn btn-outline" onclick="PortalManager.navigate('search')">
+                Go to Search Cases
+              </button>
+              <button class="btn btn-outline" onclick="PortalManager.navigate('search_list')">
+                Go to Search Results List
+              </button>
+              <button class="btn btn-outline" onclick="PortalManager.navigate('login')">
+                Return to Login Page
+              </button>
+            </div>
+          </div>
+
+          <!-- Screen Inspection & Retrieval -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Authorized Visible Record Retrieval</div>
+              <button class="btn btn-success" onclick="PortalManager.inspectScreen()">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                Inspect Current Screen Records
+              </button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+              Extracts visible table records from your currently open Operational Desk or Search screen. 
+              Checks for duplicates against your local database before allowing selective import.
+            </p>
+
+            <div id="portal-records-preview" style="display: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span id="portal-records-summary" style="font-size: 13px; font-weight: 600;"></span>
+                <button class="btn btn-primary" onclick="PortalManager.importSelected()">
+                  Import Selected to Workbench
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px;"><input type="checkbox" id="check-all-portal" onchange="PortalManager.toggleSelectAll(this)"></th>
+                      <th>Registration No</th>
+                      <th>Subject</th>
+                      <th>Complainant</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Duplicate Check</th>
+                    </tr>
+                  </thead>
+                  <tbody id="portal-records-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fallback Manual Import -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Manual Export File Import (Zero Browser Fallback)</div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+              If direct browser retrieval is not desired or restricted by network policy, you can download official Excel/CSV reports directly from CPGRAMS and import them here:
+            </p>
+            <button class="btn btn-outline" onclick="App.switchView('intake')">
+              Open Document & Excel Intake Module
+            </button>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: INTAKE & PROCESSING (MODULE C) -->
+        <!-- ========================================== -->
+        <section id="view-intake" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">New Grievance Intake</div>
+            </div>
+            
+            <!-- Intake Mode Tabs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+              <button id="tab-btn-file" class="btn btn-primary" onclick="IntakeManager.setMode('file')">Upload Document (PDF, DOCX, TXT, Excel)</button>
+              <button id="tab-btn-text" class="btn btn-outline" onclick="IntakeManager.setMode('text')">Paste Grievance Text</button>
+            </div>
+
+            <!-- Mode 1: File Upload -->
+            <div id="intake-file-container">
+              <div style="border: 2px dashed var(--border-color); padding: 40px; text-align: center; border-radius: 8px; background: #fafbfc; cursor: pointer;" onclick="document.getElementById('intake-file-input').click()">
+                <svg viewBox="0 0 24 24" width="48" height="48" fill="#90a4ae"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                <h4 style="margin: 12px 0 4px; font-size: 15px; color: var(--meity-navy);">Click to select or drag and drop grievance files</h4>
+                <p style="font-size: 12.5px; color: var(--text-muted);">Supports PDF (with OCR scan detection), DOCX, TXT, CSV, and Excel (.xlsx) up to 25MB</p>
+                <input type="file" id="intake-file-input" style="display: none;" onchange="IntakeManager.handleFileSelect(this)">
+              </div>
+            </div>
+
+            <!-- Mode 2: Pasted Text -->
+            <div id="intake-text-container" style="display: none;">
+              <div class="form-group">
+                <label class="form-label">Paste Raw Grievance Text / Application Notice:</label>
+                <textarea id="intake-pasted-text" class="form-control" style="min-height: 200px;" placeholder="Paste grievance communication text including registration number, complainant details, and requested relief..."></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="IntakeManager.parsePastedText()">Extract Entities & Verify</button>
+            </div>
+          </div>
+
+          <!-- Extraction Verification Card (shown after parse) -->
+          <div id="intake-preview-card" class="card" style="display: none;">
+            <div class="card-header">
+              <div class="card-title">Extracted Grievance Data — Officer Verification</div>
+              <span id="intake-dup-badge" class="badge badge-sample"></span>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">
+              Review and correct extracted fields before committing to database. Treated as untrusted input.
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label">Registration Number</label>
+                <input type="text" id="intake-field-reg" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Date Received</label>
+                <input type="date" id="intake-field-date" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Applicant Name</label>
+                <input type="text" id="intake-field-name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Applicant Contact (Email / Phone)</label>
+                <input type="text" id="intake-field-contact" class="form-control">
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">Subject</label>
+                <input type="text" id="intake-field-subject" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="intake-field-category" class="form-control">
+                  <option value="AI & Emerging Technologies">AI & Emerging Technologies</option>
+                  <option value="IndiaAI Mission & Compute Capacity">IndiaAI Mission & Compute Capacity</option>
+                  <option value="Deepfake & Synthetic Media">Deepfake & Synthetic Media</option>
+                  <option value="Data Protection & Privacy">Data Protection & Privacy</option>
+                  <option value="AI Safety & Ethics">AI Safety & Ethics</option>
+                  <option value="Startups & R&D Innovation">Startups & R&D Innovation</option>
+                  <option value="General Public">General Public</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select id="intake-field-priority" class="form-control">
+                  <option value="Normal">Normal (21 Days)</option>
+                  <option value="High">High</option>
+                  <option value="Urgent">Urgent (&lt; 7 Days)</option>
+                </select>
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">Requested Relief</label>
+                <textarea id="intake-field-relief" class="form-control" style="min-height: 70px;"></textarea>
+              </div>
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label">Full Grievance Text</label>
+                <textarea id="intake-field-text" class="form-control" style="min-height: 140px;"></textarea>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
+              <button class="btn btn-outline" onclick="IntakeManager.cancelPreview()">Cancel</button>
+              <button class="btn btn-success" onclick="IntakeManager.confirmIntake()">Confirm & Save to Register</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: GRIEVANCE REGISTER (MODULE D) -->
+        <!-- ========================================== -->
+        <section id="view-register" class="view-section">
+          <div class="card">
+            <!-- Filter Bar -->
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="reg-search-input" class="form-control" style="width: 260px;" placeholder="Search Reg No, Subject, Citizen..." oninput="RegisterManager.handleSearch()">
+              
+              <select id="reg-filter-status" class="form-control" style="width: 170px;" onchange="RegisterManager.loadRegister()">
+                <option value="All">All Statuses</option>
+                <option value="New">New</option>
+                <option value="Under Examination">Under Examination</option>
+                <option value="Awaiting Inputs">Awaiting Inputs</option>
+                <option value="Draft Prepared">Draft Prepared</option>
+                <option value="Approved for Disposal">Approved for Disposal</option>
+                <option value="Disposed">Disposed</option>
+              </select>
+
+              <select id="reg-filter-category" class="form-control" style="width: 200px;" onchange="RegisterManager.loadRegister()">
+                <option value="All">All Categories</option>
+                <option value="IndiaAI Mission & Compute Capacity">IndiaAI Mission</option>
+                <option value="Deepfake & Synthetic Media">Deepfake & Synthetic</option>
+                <option value="Data Protection & Privacy">Data Protection</option>
+                <option value="AI Safety & Ethics">AI Safety</option>
+                <option value="Startups & R&D Innovation">Startups & R&D</option>
+                <option value="AI Governance & Policy">AI Governance</option>
+              </select>
+
+              <select id="reg-filter-priority" class="form-control" style="width: 140px;" onchange="RegisterManager.loadRegister()">
+                <option value="All">All Priorities</option>
+                <option value="Urgent">Urgent</option>
+                <option value="High">High</option>
+                <option value="Normal">Normal</option>
+              </select>
+
+              <select id="reg-filter-sample" class="form-control" style="width: 150px;" onchange="RegisterManager.loadRegister()">
+                <option value="All">All Data</option>
+                <option value="false">Portal Records Only</option>
+                <option value="true">Sample Records</option>
+              </select>
+            </div>
+
+            <!-- Register Table -->
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Registration No</th>
+                    <th>Subject</th>
+                    <th>Received</th>
+                    <th>Applicant</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Deadline Norm</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="register-tbody">
+                  <tr><td colspan="9" style="text-align: center;">Loading cases...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+              <span id="register-count-label" style="font-size: 12.5px; color: var(--text-muted);"></span>
+              <div style="display: flex; gap: 6px;">
+                <button id="reg-prev-btn" class="btn btn-outline" style="padding: 4px 10px;" onclick="RegisterManager.prevPage()">Previous</button>
+                <button id="reg-next-btn" class="btn btn-outline" style="padding: 4px 10px;" onclick="RegisterManager.nextPage()">Next</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 5: CASE DETAIL WORKSPACE (MODULES D, F, G, H, I) -->
+        <!-- ========================================== -->
+        <section id="view-detail" class="view-section">
+          <!-- Case Header Banner -->
+          <div class="card" style="padding: 16px 20px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <button class="btn btn-outline" style="padding: 3px 8px; font-size: 11px; margin-bottom: 6px;" onclick="App.switchView('register')">
+                  ← Back to Register
+                </button>
+                <h3 id="case-header-title" style="font-size: 18px; color: var(--meity-navy); font-weight: 700;"></h3>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: 12.5px; color: var(--text-muted);">
+                  <span>Reg: <strong id="case-header-reg" style="color: var(--meity-blue);"></strong></span>
+                  <span>•</span>
+                  <span>Received: <strong id="case-header-date"></strong></span>
+                  <span>•</span>
+                  <span>Applicant: <strong id="case-header-applicant"></strong></span>
+                  <span id="case-header-sample-badge"></span>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="case-header-status-badge"></span>
+                <span id="case-header-deadline-badge"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case Workspace Tabs -->
+          <div style="display: flex; gap: 6px; border-bottom: 2px solid var(--border-color); margin-bottom: 16px;">
+            <button class="btn btn-outline case-tab active" data-tab="tab-case-narrative" onclick="CaseWorkspace.switchTab('tab-case-narrative')">
+              1. Case Narrative & Details
+            </button>
+            <button class="btn btn-outline case-tab" data-tab="tab-case-analysis" onclick="CaseWorkspace.switchTab('tab-case-analysis')">
+              2. AI Analysis & Policy Rationale
+            </button>
+            <button class="btn btn-outline case-tab" data-tab="tab-case-precedents" onclick="CaseWorkspace.switchTab('tab-case-precedents')">
+              3. Precedent Library Matches
+            </button>
+            <button class="btn btn-outline case-tab" data-tab="tab-case-drafting" onclick="CaseWorkspace.switchTab('tab-case-drafting')">
+              4. Official Reply Drafting Studio
+            </button>
+            <button class="btn btn-outline case-tab" data-tab="tab-case-correspondence" onclick="CaseWorkspace.switchTab('tab-case-correspondence')">
+              5. Departmental Inputs Tracker
+            </button>
+            <button class="btn btn-outline case-tab" data-tab="tab-case-history" onclick="CaseWorkspace.switchTab('tab-case-history')">
+              6. Audit & Action History
+            </button>
+          </div>
+
+          <!-- TAB 1: Case Narrative -->
+          <div id="tab-case-narrative" class="case-tab-content">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Grievance Narrative & Particulars</div>
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="CaseWorkspace.openEditModal()">Edit Case Details</button>
+              </div>
+              <div style="margin-bottom: 16px;">
+                <h5 style="font-size: 13px; font-weight: 700; color: var(--meity-navy); margin-bottom: 4px;">Subject:</h5>
+                <p id="detail-subject" style="font-size: 14px; background: #f8fafc; padding: 8px 12px; border-radius: 4px; border: 1px solid #edf0f5;"></p>
+              </div>
+              <div style="margin-bottom: 16px;">
+                <h5 style="font-size: 13px; font-weight: 700; color: var(--meity-navy); margin-bottom: 4px;">Requested Relief:</h5>
+                <p id="detail-relief" style="font-size: 13.5px; background: #fffde7; padding: 8px 12px; border-radius: 4px; border: 1px solid #fff9c4; color: #7f6000;"></p>
+              </div>
+              <div>
+                <h5 style="font-size: 13px; font-weight: 700; color: var(--meity-navy); margin-bottom: 4px;">Full Communication Text:</h5>
+                <div id="detail-text" style="font-size: 13.5px; line-height: 1.6; background: #ffffff; padding: 14px; border-radius: 4px; border: 1px solid var(--border-color); white-space: pre-wrap;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: AI Analysis (Module F) -->
+          <div id="tab-case-analysis" class="case-tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">12-Point Structured Grievance Analysis</div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="CaseWorkspace.openAnalysisEditModal()">Manual Correction</button>
+                  <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;" onclick="CaseWorkspace.refreshAnalysis()">Re-analyze</button>
+                </div>
+              </div>
+
+              <!-- Senior Review Warning if flagged -->
+              <div id="analysis-senior-review-box" class="alert-banner alert-warning" style="display: none;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <div>
+                  <strong>SENIOR OFFICER REVIEW REQUIRED:</strong>
+                  <div id="analysis-senior-review-reasons"></div>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="grid-column: span 2;">
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">1. Concise Summary</h5>
+                  <p id="an-summary" style="font-size: 13.5px; margin-top: 3px;"></p>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">2. Main Allegations</h5>
+                  <div id="an-allegations" style="font-size: 13px; margin-top: 3px; white-space: pre-line;"></div>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">3. Exact Relief Requested</h5>
+                  <p id="an-relief" style="font-size: 13px; margin-top: 3px; color: var(--meity-blue); font-weight: 600;"></p>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">4. Facts, Dates & Reference IDs</h5>
+                  <p id="an-facts" style="font-size: 13px; margin-top: 3px;"></p>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">5. Policy & Statutory Issues</h5>
+                  <div id="an-policy" style="font-size: 13px; margin-top: 3px; white-space: pre-line;"></div>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">6. Submission Type & Classification</h5>
+                  <p id="an-subtype" style="font-size: 13.5px; margin-top: 3px; font-weight: 700; color: #155724;"></p>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">7. Departmental Routing Recommendation</h5>
+                  <p id="an-routing" style="font-size: 13.5px; margin-top: 3px; font-weight: 600; color: var(--meity-blue);"></p>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">8. Recommended Next Action</h5>
+                  <p id="an-action" style="font-size: 13.5px; margin-top: 3px; font-weight: 700;"></p>
+                </div>
+                <div>
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">9. Analysis Confidence</h5>
+                  <p id="an-confidence" style="font-size: 13px; margin-top: 3px;"></p>
+                </div>
+                <div style="grid-column: span 2;">
+                  <h5 style="font-size: 12.5px; font-weight: 700; color: var(--meity-navy); text-transform: uppercase;">10. Missing Information & Verification Checks</h5>
+                  <div id="an-missing" style="font-size: 13px; margin-top: 3px; color: #856404; white-space: pre-line;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: Precedents (Module E & I) -->
+          <div id="tab-case-precedents" class="case-tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Matching Disposed Grievances (Semantic Vector Search)</div>
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="CaseWorkspace.runSemanticPrecedentSearch()">Refresh Matching</button>
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+                Matches against previously disposed CPGRAMS cases using local TF-IDF cosine similarity.
+                Select relevant precedents to synthesize into your official draft reply.
+              </p>
+              <div id="case-precedents-list"></div>
+            </div>
+          </div>
+
+          <!-- TAB 4: Drafting Studio (Module H) -->
+          <div id="tab-case-drafting" class="case-tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Official Reply Drafting Studio</div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="DraftingManager.showDiffModal()">
+                    Side-by-Side Diff
+                  </button>
+                  <button class="btn btn-success" style="font-size: 12px; padding: 4px 8px;" onclick="DraftingManager.approveCurrentDraft()">
+                    Approve for Disposal
+                  </button>
+                  <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;" onclick="DraftingManager.exportCurrentDraft('docx')">
+                    Export DOCX
+                  </button>
+                  <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="DraftingManager.exportCurrentDraft('txt')">
+                    Export TXT
+                  </button>
+                </div>
+              </div>
+
+              <!-- Draft Generator Controls -->
+              <div style="background: #f8fafc; padding: 14px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 16px;">
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                  <span style="font-size: 13px; font-weight: 700; color: var(--meity-navy);">Draft Framework:</span>
+                  <select id="draft-type-select" class="form-control" style="width: 250px;">
+                    <option value="standard_disposal">Standard CPGRAMS Disposal Reply</option>
+                    <option value="policy_explanation">Policy Explanation (IndiaAI / Tech)</option>
+                    <option value="out_of_scope">Outside Operational Mandate Advisory</option>
+                    <option value="transfer_referral">Transfer under Rule 6 Intimation</option>
+                    <option value="call_for_inputs">Inter-Divisional Call for Inputs (U.O. Note)</option>
+                  </select>
+                  <button class="btn btn-primary" onclick="DraftingManager.generateNewDraft()">Generate Synthesized Draft</button>
+                </div>
+              </div>
+
+              <!-- Compliance Notice Panel -->
+              <div id="draft-compliance-box" style="margin-bottom: 14px; font-size: 12.5px; padding: 10px 14px; border-radius: 5px; background: #e8f4fd; border: 1px solid #b8daff; color: #0c5460;">
+                Draft meets official formatting standards.
+              </div>
+
+              <!-- Editor -->
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="form-label" style="margin-bottom: 0;">Official Reply Body (Editable Paragraphs):</label>
+                  <span id="draft-version-label" style="font-size: 12px; color: var(--text-muted);">Version 1</span>
+                </div>
+                <textarea id="draft-editor-text" class="form-control" style="min-height: 280px; font-size: 14px; line-height: 1.6;" oninput="DraftingManager.handleDraftEdit()"></textarea>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11.5px; color: var(--text-muted);">Note: Fill all [VERIFY: ...] bracketed details before approving. Drafts do not automatically dispose cases on CPGRAMS portal.</span>
+                <button class="btn btn-primary" onclick="DraftingManager.saveDraftRevisions()">Save Draft Revision</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: Correspondence (Module J) -->
+          <div id="tab-case-correspondence" class="case-tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Inter-Divisional Calls for Input</div>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;" onclick="CaseWorkspace.openNewCorrespondenceModal()">Log New Input Request</button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Ref Number</th>
+                      <th>Recipient Office</th>
+                      <th>Date Sent</th>
+                      <th>Subject</th>
+                      <th>Due Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="case-corr-tbody">
+                    <tr><td colspan="7" style="text-align: center;">No departmental inputs logged for this case.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 6: Action History -->
+          <div id="tab-case-history" class="case-tab-content" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Case Operations & Audit History</div>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Event</th>
+                      <th>Details</th>
+                      <th>Actor</th>
+                    </tr>
+                  </thead>
+                  <tbody id="case-audit-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 6: HISTORICAL DISPOSED LIBRARY (MODULE E) -->
+        <!-- ========================================== -->
+        <section id="view-precedents" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Historical Disposed Grievance Library (Approved Knowledge Base)</div>
+              <button class="btn btn-primary" onclick="PrecedentManager.openAddModal()">Add Disposed Case</button>
+            </div>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;">
+              <input type="text" id="prec-search-input" class="form-control" style="width: 280px;" placeholder="Search wording, subject, reply, scheme..." oninput="PrecedentManager.loadLibrary()">
+              
+              <select id="prec-filter-category" class="form-control" style="width: 220px;" onchange="PrecedentManager.loadLibrary()">
+                <option value="All">All Categories</option>
+                <option value="IndiaAI Mission & Compute Capacity">IndiaAI Mission</option>
+                <option value="Deepfake & Synthetic Media">Deepfake & Synthetic Media</option>
+                <option value="Data Protection & Privacy">Data Protection & Privacy</option>
+                <option value="Startups & R&D Innovation">Startups & R&D Innovation</option>
+                <option value="AI Governance & Policy">AI Governance & Policy</option>
+              </select>
+
+              <select id="prec-filter-reuse" class="form-control" style="width: 190px;" onchange="PrecedentManager.loadLibrary()">
+                <option value="All">All Reuse Tags</option>
+                <option value="useful_precedent">Useful Precedent</option>
+                <option value="outdated">Outdated / Superseded</option>
+                <option value="restricted">Restricted / Specific</option>
+                <option value="incorrect">Incorrect for Reuse</option>
+              </select>
+            </div>
+
+            <div id="precedents-container"></div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 7: ROUTING ASSISTANT (MODULE G) -->
+        <!-- ========================================== -->
+        <section id="view-routing" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Departmental Routing Directory & Rules</div>
+              <button class="btn btn-primary" onclick="RoutingManager.openAddRuleModal()">Add Routing Rule</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+              Configurable departmental routing directory. Evaluates subject and keyword patterns to recommend whether cases belong to AI & ET Division, should be transferred under Rule 6, or require inter-divisional comments.
+            </p>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Rule Name</th>
+                    <th>Keyword Triggers</th>
+                    <th>Target Ministry / Division</th>
+                    <th>Recommended Action</th>
+                    <th>Basis & Explanation</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="routing-rules-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 8: INPUT TRACKER (MODULE J) -->
+        <!-- ========================================== -->
+        <section id="view-correspondence" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Departmental Correspondence & Input Tracker</div>
+              <button class="btn btn-primary" onclick="CorrespondenceManager.openAddModal()">Log New Call for Inputs</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+              Tracks pending inquiries sent to other divisions (e.g. C-DAC, NIC, Cyber Laws Division, Trai, DoT) to prevent delayed CPGRAMS disposals.
+            </p>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Reference No</th>
+                    <th>Recipient Office</th>
+                    <th>Date Sent</th>
+                    <th>Subject</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Follow-up History</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="master-corr-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 9: REPORTS & ANALYTICS (MODULE K) -->
+        <!-- ========================================== -->
+        <section id="view-reports" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Operational Reports & Analytics</div>
+              <div style="display: flex; gap: 8px;">
+                <a href="/api/reports/export/xlsx" class="btn btn-success" style="font-size: 12px; padding: 4px 10px;">Export to Excel (.xlsx)</a>
+                <a href="/api/reports/export/csv" class="btn btn-outline" style="font-size: 12px; padding: 4px 10px;">Export to CSV</a>
+              </div>
+            </div>
+
+            <!-- Ageing Breakdown Cards -->
+            <h4 style="font-size: 14px; font-weight: 700; color: var(--meity-navy); margin-bottom: 12px;">Pending Grievances Ageing Breakdown:</h4>
+            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+              <div class="stat-card">
+                <div class="stat-label">0 to 7 Days</div>
+                <div class="stat-value" id="rep-age-7">0</div>
+                <div class="stat-subtitle">Freshly received</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label">8 to 15 Days</div>
+                <div class="stat-value" id="rep-age-15">0</div>
+                <div class="stat-subtitle">Under examination</div>
+              </div>
+              <div class="stat-card approaching">
+                <div class="stat-label">16 to 30 Days</div>
+                <div class="stat-value" id="rep-age-30">0</div>
+                <div class="stat-subtitle">Nearing 21/30-day norm</div>
+              </div>
+              <div class="stat-card urgent">
+                <div class="stat-label">Over 30 Days</div>
+                <div class="stat-value" id="rep-age-over30">0</div>
+                <div class="stat-subtitle">Overdue for disposal</div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <!-- Category Breakdown Table -->
+              <div class="card" style="margin-bottom: 0;">
+                <div class="card-title" style="margin-bottom: 12px;">Cases by Division / Category</div>
+                <table class="data-table">
+                  <thead>
+                    <tr><th>Category</th><th>Count</th></tr>
+                  </thead>
+                  <tbody id="rep-cat-tbody"></tbody>
+                </table>
+              </div>
+
+              <!-- Precedent Metrics Table -->
+              <div class="card" style="margin-bottom: 0;">
+                <div class="card-title" style="margin-bottom: 12px;">Knowledge Base & Precedent Metrics</div>
+                <table class="data-table">
+                  <tbody>
+                    <tr><td>Total Precedents in Library</td><td id="rep-prec-total" style="font-weight:700;"></td></tr>
+                    <tr><td>Approved Useful Precedents</td><td id="rep-prec-useful" style="font-weight:700; color: #27ae60;"></td></tr>
+                    <tr><td>Flagged Outdated / Deprecated</td><td id="rep-prec-outdated" style="font-weight:700; color: #e65100;"></td></tr>
+                    <tr><td>Official Reply Drafts Synthesized</td><td id="rep-drafts-total" style="font-weight:700;"></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 10: SETTINGS & SECURITY (MODULE L) -->
+        <!-- ========================================== -->
+        <section id="view-settings" class="view-section">
+          <!-- System Diagnostics -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">System Diagnostics & Security Controls</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; font-size: 13px;">
+              <div><strong>Host Binding:</strong> <span id="diag-host">127.0.0.1 (Localhost Only)</span></div>
+              <div><strong>Port:</strong> <span id="diag-port">8000</span></div>
+              <div><strong>Network Policy:</strong> <span style="color: #27ae60; font-weight:700;">No External Telemetry</span></div>
+              <div><strong>Detected Browser:</strong> <span id="diag-browser"></span></div>
+              <div><strong>Operating System:</strong> <span id="diag-os"></span></div>
+              <div><strong>Python Version:</strong> <span id="diag-python"></span></div>
+            </div>
+          </div>
+
+          <!-- Backup and Restore -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Local Database Backup & Restore</div>
+              <button class="btn btn-primary" onclick="SettingsManager.createBackup()">Create Instant Snapshot</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+              Point-in-time SQLite backups stored in <code>data/backups/</code>. Restore includes integrity validation and pre-restore rollback safety copy.
+            </p>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Backup Snapshot Filename</th>
+                    <th>Size</th>
+                    <th>Created Timestamp</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="backups-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Audit Trail Explorer -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Security & Operations Audit Trail</div>
+              <select id="audit-filter-type" class="form-control" style="width: 200px;" onchange="SettingsManager.loadAuditLogs()">
+                <option value="All">All Operations</option>
+                <option value="RECORD_IMPORT">Record Imports</option>
+                <option value="RECORD_MODIFIED">Modifications</option>
+                <option value="DRAFT_GENERATED">Draft Generation</option>
+                <option value="APPROVAL_MARKED">Approvals</option>
+                <option value="EXPORT">Document Exports</option>
+                <option value="BACKUP_CREATED">Backups</option>
+              </select>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Event Type</th>
+                    <th>Entity</th>
+                    <th>Details</th>
+                    <th>Actor</th>
+                  </tr>
+                </thead>
+                <tbody id="full-audit-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <!-- 1. Diff Modal -->
+  <div id="diff-modal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3>Side-by-Side Draft Comparison Diff</h3>
+        <button class="btn btn-outline" onclick="DraftingManager.closeDiffModal()">✕</button>
+      </div>
+      <div class="modal-body" id="diff-modal-content"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="DraftingManager.closeDiffModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Manual Analysis Correction Modal -->
+  <div id="analysis-edit-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Manual Correction: AI Grievance Analysis</h3>
+        <button class="btn btn-outline" onclick="CaseWorkspace.closeAnalysisEditModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Summary:</label>
+          <textarea id="edit-an-summary" class="form-control" style="min-height: 60px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Main Allegations:</label>
+          <textarea id="edit-an-allegations" class="form-control" style="min-height: 60px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Exact Relief Requested:</label>
+          <input type="text" id="edit-an-relief" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Recommended Action:</label>
+          <input type="text" id="edit-an-action" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Submission Classification:</label>
+          <select id="edit-an-subtype" class="form-control">
+            <option value="Public Grievance">Public Grievance</option>
+            <option value="Suggestion / Policy Proposal">Suggestion / Policy Proposal</option>
+            <option value="Representation">Representation</option>
+            <option value="RTI Query / Information Request">RTI Query / Information Request</option>
+            <option value="Legal / Sub-Judice Matter">Legal / Sub-Judice Matter</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="CaseWorkspace.closeAnalysisEditModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="CaseWorkspace.saveAnalysisCorrections()">Save Corrections</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Add Precedent Modal -->
+  <div id="add-precedent-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Add Historical Disposed Grievance</h3>
+        <button class="btn btn-outline" onclick="PrecedentManager.closeAddModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Registration Number</label>
+          <input type="text" id="add-p-reg" class="form-control" placeholder="e.g. MEITY/E/2024/0009876">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input type="text" id="add-p-subject" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="add-p-category" class="form-control">
+            <option value="IndiaAI Mission & Compute Capacity">IndiaAI Mission & Compute Capacity</option>
+            <option value="Deepfake & Synthetic Media">Deepfake & Synthetic Media</option>
+            <option value="Data Protection & Privacy">Data Protection & Privacy</option>
+            <option value="Startups & R&D Innovation">Startups & R&D Innovation</option>
+            <option value="AI Governance & Policy">AI Governance & Policy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Disposal Date</label>
+          <input type="date" id="add-p-date" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Original Grievance Text</label>
+          <textarea id="add-p-grievance" class="form-control" style="min-height: 80px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Official Final Reply</label>
+          <textarea id="add-p-reply" class="form-control" style="min-height: 100px;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="PrecedentManager.closeAddModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="PrecedentManager.savePrecedent()">Save to Library</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Add Routing Rule Modal -->
+  <div id="add-rule-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Create Departmental Routing Rule</h3>
+        <button class="btn btn-outline" onclick="RoutingManager.closeAddRuleModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Rule Name</label>
+          <input type="text" id="rule-name-input" class="form-control" placeholder="e.g. Quantum Computing Queries">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Keyword Triggers (comma separated)</label>
+          <input type="text" id="rule-keywords-input" class="form-control" placeholder="quantum, qubit, quantum mission">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Ministry / Division</label>
+          <input type="text" id="rule-division-input" class="form-control" value="AI & Emerging Technologies Division">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Recommended Action</label>
+          <input type="text" id="rule-action-input" class="form-control" placeholder="Examine on merits / Transfer under Rule 6">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Basis & Jurisdictional Explanation</label>
+          <textarea id="rule-explanation-input" class="form-control" style="min-height: 60px;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="RoutingManager.closeAddRuleModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="RoutingManager.saveRule()">Save Rule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Application Scripts -->
+  <script src="js/mock_data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/portal.js"></script>
+  <script src="js/intake.js"></script>
+  <script src="js/register.js"></script>
+  <script src="js/precedents.js"></script>
+  <script src="js/drafting.js"></script>
+  <script src="js/correspondence.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>

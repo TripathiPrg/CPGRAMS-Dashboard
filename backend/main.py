@@ -73,18 +73,28 @@ app.include_router(correspondence.router)
 app.include_router(reports.router)
 app.include_router(settings.router)
 
-# Mount Frontend Static Assets
+# Mount Static Assets
+css_dir = PROJECT_ROOT / "css"
+js_dir = PROJECT_ROOT / "js"
 frontend_dir = PROJECT_ROOT / "frontend"
+
+if css_dir.exists():
+    app.mount("/css", StaticFiles(directory=str(css_dir)), name="css")
+if js_dir.exists():
+    app.mount("/js", StaticFiles(directory=str(js_dir)), name="js")
 if frontend_dir.exists():
     app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 
 @app.get("/")
 def serve_index():
     """Serves the primary Single Page Application interface."""
-    index_file = frontend_dir / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file))
-    return {"message": "CPGRAMS Personal Workbench API is running. Frontend index.html not found."}
+    root_index = PROJECT_ROOT / "index.html"
+    if root_index.exists():
+        return FileResponse(str(root_index))
+    alt_index = frontend_dir / "index.html"
+    if alt_index.exists():
+        return FileResponse(str(alt_index))
+    return {"message": "CPGRAMS Personal Workbench API is running. index.html not found."}
 
 @app.get("/health")
 def health_check():

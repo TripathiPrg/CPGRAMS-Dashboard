@@ -30,16 +30,30 @@ const RegisterManager = {
     if (priority !== "All") params.append("priority", priority);
     if (sample !== "All") params.append("is_sample", sample);
 
+    let data = null;
     try {
-      const res = await fetch(`/api/grievances?${params.toString()}`);
-      const data = await res.json();
-
-      document.getElementById("register-count-label").innerText = `Showing ${data.items.length} of ${data.total} records (Page ${data.page})`;
-
-      if (data.items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No matching grievance records found.</td></tr>`;
-        return;
+      if (!window.MockStore || !MockStore.isStaticMode) {
+        const res = await fetch(`/api/grievances?${params.toString()}`);
+        if (res.ok) data = await res.json();
       }
+    } catch (e) {
+      console.warn("API not reachable, using static mock grievances");
+    }
+
+    if (!data && window.MockStore) {
+      data = {
+        total: MockStore.grievances.length,
+        page: 1,
+        items: MockStore.grievances
+      };
+    }
+
+    if (!data || data.items.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No matching grievance records found.</td></tr>`;
+      return;
+    }
+
+    document.getElementById("register-count-label").innerText = `Showing ${data.items.length} of ${data.total} records (Page ${data.page})`;
 
       tbody.innerHTML = data.items.map(g => {
         // Status Badge
