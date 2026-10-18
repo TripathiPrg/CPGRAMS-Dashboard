@@ -286,6 +286,7 @@ def seed_database(db: Session):
             ),
             "requested_relief": "Expedited technical evaluation and release of IndiaAI GPU compute voucher for Application IA-COMP-2026-0891.",
             "status": "Under Examination",
+            "workflow_state": "Awaiting review",
             "recommended_action": "Seek factual status from IndiaAI Independent Business Division / CDAC technical committee.",
             "priority": "Urgent",
             "target_disposal_date": today + timedelta(days=3),  # Approaching deadline (<5 days)
@@ -309,6 +310,7 @@ def seed_database(db: Session):
             ),
             "requested_relief": "Regulatory intervention against non-compliant intermediary under IT Rules 2021 and advisory on legal recourse.",
             "status": "New",
+            "workflow_state": "Retrieved",
             "recommended_action": "Examine under IT Rules 2021; advise filing on Cybercrime Portal and GAC appeal.",
             "priority": "High",
             "target_disposal_date": today + timedelta(days=15),
@@ -330,6 +332,7 @@ def seed_database(db: Session):
             ),
             "requested_relief": "Supply of certified copies of committee meeting records and file notings.",
             "status": "Awaiting Inputs",
+            "workflow_state": "Analysis complete",
             "recommended_action": "Dispose as outside CPGRAMS scope with advice to submit statutory application via rtionline.gov.in.",
             "priority": "Normal",
             "target_disposal_date": today - timedelta(days=4),  # Overdue case (>21 days)
@@ -351,6 +354,7 @@ def seed_database(db: Session):
             ),
             "requested_relief": "Consideration of collaborative research proposal under IndiaAI datasets initiative.",
             "status": "Draft Prepared",
+            "workflow_state": "Approved for submission",
             "recommended_action": "Issue policy explanation draft explaining IndiaAI Datasets Platform and EoI application channel.",
             "priority": "Normal",
             "target_disposal_date": today + timedelta(days=17),

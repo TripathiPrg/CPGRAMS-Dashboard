@@ -17,7 +17,8 @@ const CaseWorkspace = {
 
   async loadCase(id) {
     try {
-      const res = await fetch(`/api/grievances/${id}?unmask_pii=${!App.maskPII}`);
+      const url = App.getApiUrl(`/api/grievances/${id}?unmask_pii=${!App.maskPII}`);
+      const res = await fetch(url, { headers: App.getAuthHeaders() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to load case");
 
@@ -29,6 +30,11 @@ const CaseWorkspace = {
       this.renderCorrespondence(data.correspondence);
       this.renderAuditLogs(data.audit_logs);
       
+      // Initialize disposal & verification module
+      if (window.DisposalManager) {
+        DisposalManager.initCaseDisposal(data);
+      }
+
       // Run automatic semantic precedent matching
       this.runSemanticPrecedentSearch();
 
@@ -64,6 +70,17 @@ const CaseWorkspace = {
     else if (g.status === "Draft Prepared") statusClass = "badge-draft";
     statusBadge.className = `badge ${statusClass}`;
     statusBadge.innerText = g.status;
+
+    const wfBadge = document.getElementById("case-header-workflow-badge");
+    if (wfBadge) {
+      const wfState = g.workflow_state || "Retrieved";
+      wfBadge.innerText = `State: ${wfState}`;
+      if (wfState === "Official submission confirmed") wfBadge.className = "badge badge-approved";
+      else if (wfState === "Approved for submission") wfBadge.className = "badge badge-inputs";
+      else if (wfState === "Submission in progress") wfBadge.className = "badge badge-exam";
+      else if (wfState === "Status requires verification") wfBadge.className = "badge badge-approaching";
+      else wfBadge.className = "badge badge-draft";
+    }
 
     const deadlineBadge = document.getElementById("case-header-deadline-badge");
     if (g.status === "Approved for Disposal" || g.status === "Disposed") {
@@ -336,9 +353,10 @@ const DraftingManager = {
     const draftType = document.getElementById("draft-type-select").value;
 
     try {
-      const res = await fetch("/api/drafting/generate", {
+      const url = App.getApiUrl("/api/drafting/generate");
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           grievance_id: App.currentCaseId,
           draft_type: draftType,
@@ -369,9 +387,10 @@ const DraftingManager = {
     const revisedText = document.getElementById("draft-editor-text").value;
 
     try {
-      const res = await fetch(`/api/drafting/${this.activeDraft.id}`, {
+      const url = App.getApiUrl(`/api/drafting/${this.activeDraft.id}`);
+      const res = await fetch(url, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           current_draft_text: revisedText
         })
@@ -394,7 +413,11 @@ const DraftingManager = {
     }
 
     try {
-      const res = await fetch(`/api/drafting/${this.activeDraft.id}/diff`, { method: "POST" });
+      const url = App.getApiUrl(`/api/drafting/${this.activeDraft.id}/diff`);
+      const res = await fetch(url, {
+        method: "POST",
+        headers: App.getAuthHeaders()
+      });
       const data = await res.json();
 
       const modalContent = document.getElementById("diff-modal-content");
@@ -430,9 +453,10 @@ const DraftingManager = {
     if (!conf) return;
 
     try {
-      const res = await fetch(`/api/drafting/${this.activeDraft.id}/approve`, {
+      const url = App.getApiUrl(`/api/drafting/${this.activeDraft.id}/approve`);
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: App.getAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ approver: "Public Grievance Officer (MeitY AI & ET)" })
       });
       const data = await res.json();
@@ -451,6 +475,6 @@ const DraftingManager = {
       return;
     }
     const mask = App.maskPII ? "true" : "false";
-    window.location.href = `/api/drafting/${this.activeDraft.id}/export/${fmt}?mask_pii=${mask}`;
+    window.location.href = App.getApiUrl(`/api/drafting/${this.activeDraft.id}/export/${fmt}?mask_pii=${mask}`);
   }
 };

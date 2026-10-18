@@ -28,6 +28,7 @@ data/backups/*
 
 # Logs and environment
 *.log
+*.key
 .env
 .DS_Store
 Thumbs.db

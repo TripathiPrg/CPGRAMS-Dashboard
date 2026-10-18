@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from backend.config import PROJECT_ROOT, HOST, PORT
+from backend.config import PROJECT_ROOT, HOST, PORT, ALLOWED_ORIGINS, LOCAL_BRIDGE_TOKEN
 from backend.database import init_db, SessionLocal
 from backend.seed_data import seed_database
 from backend.routers import (
@@ -24,7 +24,8 @@ from backend.routers import (
     drafting,
     correspondence,
     reports,
-    settings
+    settings,
+    disposal
 )
 
 # Initialize Database and Seed realistic synthetic data
@@ -38,14 +39,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Security Middleware: Localhost CORS and Security Headers
+# Security Middleware: Localhost & GitHub Pages CORS and Security Headers
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:8000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8501"
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,6 +59,37 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(SecurityHeadersMiddleware)
 
+# Bridge Authentication & Health Endpoints
+@app.get("/api/bridge/status")
+def bridge_status(request: Request):
+    """
+    Status endpoint queried by GitHub Pages frontend (tripathiprg.github.io)
+    to verify local agent connectivity and handshake.
+    """
+    origin = request.headers.get("origin", "")
+    return {
+        "status": "online",
+        "service": "CPGRAMS Personal Workbench Local Integration Agent",
+        "division": "AI & Emerging Technologies Division, MeitY",
+        "version": "1.0.0",
+        "origin_detected": origin,
+        "is_paired": True
+    }
+
+@app.get("/api/bridge/token")
+def get_bridge_token(request: Request):
+    """
+    Returns the active local bridge pairing token when accessed from localhost.
+    Used for pairing the GitHub Pages UI with the local machine.
+    """
+    client_host = request.client.host if request.client else ""
+    if client_host not in ["127.0.0.1", "localhost", "::1", "testclient"]:
+        return {"error": "Access denied. Token can only be viewed from localhost."}
+    return {
+        "token": LOCAL_BRIDGE_TOKEN,
+        "instructions": "Copy this token to pair your hosted GitHub Pages dashboard with your local machine."
+    }
+
 # Register Routers
 app.include_router(dashboard.router)
 app.include_router(portal.router)
@@ -72,6 +100,7 @@ app.include_router(drafting.router)
 app.include_router(correspondence.router)
 app.include_router(reports.router)
 app.include_router(settings.router)
+app.include_router(disposal.router)
 
 # Mount Static Assets
 css_dir = PROJECT_ROOT / "css"

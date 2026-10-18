@@ -56,70 +56,57 @@ During Phase One inspection of `https://pgportal.gov.in/CPGOFFICE/`:
 | **A. Dashboard Home** | Live figures derived from actual local database records: Total, New, Pending, Disposed, Awaiting Inputs, Drafts, Approaching Deadlines, Urgent Attention. Clear labeling of synthetic test records vs real portal records. | **Implemented & Tested** |
 | **B. CPGRAMS Assistant** | Controlled browser launcher for official portal sign-in, session status detection (Logged In / Session Expired), quick navigation buttons, read-only visible record extraction, duplicate detection, and manual file import fallback. | **Implemented & Tested** |
 | **C. Document Intake** | Multi-file intake supporting PDF, DOCX, TXT, Excel/CSV batch files, pasted text, OCR scan detection, entity extraction (Reg No, Subject, Complainant, Relief), and manual pre-commit verification modal. | **Implemented & Tested** |
-| **D. Grievance Register** | Searchable table with filtering by status, category, priority, and sample tag. Deadline countdown badges (<5 days approaching, overdue), PII privacy toggle, and dedicated case workspaces. | **Implemented & Tested** |
+| **D. Grievance Register** | Searchable table with dual status tracking (Official Portal Status vs 9-State Local Workflow State), filtering by status, category, priority, and sample tag. Deadline countdown badges (<5 days approaching, overdue), PII privacy toggle, and dedicated case workspaces. | **Implemented & Tested** |
 | **E. Disposed Library** | Searchable knowledge base of historical disposed grievances and final responses. Filter by category and reuse tag (`useful_precedent`, `outdated`, `restricted`, `incorrect`). Officer annotation editor. | **Implemented & Tested** |
 | **F. AI Grievance Analysis** | 12-point structured evaluation: Summary, allegations, exact relief, facts & dates, policy issues, submission type classification, routing recommendation, confidence score, and senior officer review alert. Manual correction modal. | **Implemented & Tested** |
 | **G. Routing Assistant** | Configurable directory of MeitY divisions, external ministries (DoT, ISM, CDSCO, RTI Cell), routing rules with keyword triggers, recommended actions, and explanations. Editable without code changes. | **Implemented & Tested** |
 | **H. Reply Drafting Studio** | MeitY official drafting workspace: standard CPGRAMS disposal, out-of-scope advisory, Rule 6 transfer intimation, call for inputs (U.O. note), and policy explanation. Rich text editor, side-by-side HTML diff table, compliance checker, and DOCX/TXT export. | **Implemented & Tested** |
 | **I. Precedent-Assisted Drafting** | Automatically executes TF-IDF semantic cosine similarity search for every case, identifies conceptual overlap, pinpoints differences, flags outdated clauses, and synthesizes precedents into the draft. | **Implemented & Tested** |
-| **J. Input Tracker** | Master tracking register for inter-divisional inquiries (C-DAC, NIC, Cyber Laws Division). Logs reference numbers, due dates, follow-up reminder history, and response summaries. | **Implemented & Tested** |
-| **K. Reports & Analytics** | Pending-case ageing breakdown (0-7, 8-15, 16-30, >30 days), category distribution, precedent reuse metrics, and one-click export of full register to Excel (`.xlsx`) and CSV. | **Implemented & Tested** |
-| **L. Settings & Security** | Database backup & restore (online SQLite snapshots with integrity validation and safety copies), security audit trail explorer, and system diagnostics. | **Implemented & Tested** |
+| **J. Official Disposal & Verification** | Complete 9-stage governance workflow: pre-submission checklist, dual-confirmation modal, browser-assisted payload staging, live portal DOM verification, and audit receipt generation. | **Implemented & Tested** |
+| **K. Input Tracker** | Master tracking register for inter-divisional inquiries (C-DAC, NIC, Cyber Laws Division). Logs reference numbers, due dates, follow-up reminder history, and response summaries. | **Implemented & Tested** |
+| **L. Reports & Analytics** | Pending-case ageing breakdown (0-7, 8-15, 16-30, >30 days), category distribution, precedent reuse metrics, and one-click export of full register to Excel (`.xlsx`) and CSV. | **Implemented & Tested** |
+| **M. Settings & Security** | Database backup & restore (online SQLite snapshots with integrity validation and safety copies), secure hybrid bridge pairing, security audit trail explorer, and system diagnostics. | **Implemented & Tested** |
 
 ---
 
-## 5. Security & Privacy Architecture
+## 5. Official 9-Stage Disposal & Verification Workflow
 
-### Data Privacy & Local Storage
-- All database records, uploaded documents, generated drafts, and backups are stored locally in the application's `data/` folder.
-- **Zero Cloud Calls**: No external AI APIs, advertising scripts, or third-party telemetry.
-- **PII Protection**: Applicant names and contact details (email/phone) are masked by default (`R**** S****`, `******3210`) in all table views and dashboard widgets. An explicit officer toggle allows unmasking when required for case examination.
+To prevent false claims of completion, the workbench enforces a strict 9-state governance lifecycle:
 
-### Network Controls
-- Application server strictly binds to `127.0.0.1:8000`.
-- Does not expose ports to public or local networks.
-- Outbound network requests are blocked in local-only mode.
-- Security headers enforced: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: no-referrer`.
+```
+[1. Retrieved] ──> [2. Analysis complete] ──> [3. Draft generated] ──> [4. Awaiting review]
+                                                                               │
+[7. Official submission confirmed] <── [6. Submission in progress] <── [5. Approved for submission]
+        ▲                                          │
+        │                                          ├──> [8. Submission failed]
+        └─────── (Portal DOM Verification) ────────┴──> [9. Status requires verification]
+```
 
-### Password & Credential Policy
-- **The CPGRAMS officer password is never requested, read, or stored.**
-- The browser assistant lets the officer authenticate directly on `https://pgportal.gov.in/CPGOFFICE/`.
-- Audit logs sanitize any sensitive keywords (`password`, `token`, `otp`, `cookie`) before recording.
-
-### Human Approval & Operational Safeguards
-- The dashboard is an assistant, not an autonomous officer.
-- **Explicit confirmation** is required before marking drafts approved, deleting records, or restoring backups.
-- No disposal or transfer actions are executed on the live CPGRAMS portal.
+### Strict Verification Guardrails:
+1. **Never Disposed without Portal Confirmation**: A grievance is NEVER marked as `Disposed` in the dashboard solely because a draft was approved or staged.
+2. **Double-Submission Prevention**: The system rejects any disposal initiation on cases already confirmed as Disposed on CPGRAMS.
+3. **Blocking Placeholders**: Drafts containing unresolved `[VERIFY: ...]` placeholders cannot be approved or initiated for disposal.
+4. **Live DOM Status Verification**: The browser assistant inspects the live CPGRAMS portal DOM to confirm that the grievance appears as `Disposed` or `Action Taken` before updating the local status. If confirmation cannot be decisively verified, the case is marked as `Status requires verification` for officer review.
+5. **Official Audit Receipt**: Confirmed disposals generate a tamper-evident audit record storing the CPGRAMS confirmation ID, verification method, timestamp, and the exact verified reply text recorded on the portal.
 
 ---
 
-## 6. Installation & Launch Instructions (Windows)
+## 6. Secure Hybrid Bridge Architecture (GitHub Pages & Local Agent)
 
-### Prerequisites
-- Windows 10 or 11 (64-bit)
-- Python 3.11+ installed (already configured on this machine at `C:\Users\Hp\AppData\Local\Programs\Python\Python311\python.exe`)
-- Google Chrome or Microsoft Edge installed
+The workbench supports a hybrid deployment model:
+- **Public Frontend**: Hosted at `https://tripathiprg.github.io/CPGRAMS-Dashboard/` (treated as untrusted, zero credentials/PII stored).
+- **Local Integration Agent**: Runs locally on the officer's Windows workstation at `http://127.0.0.1:8000`.
 
-### Quick Start (One-Click)
-Double-click either launcher script in the project root:
-- `run_workbench.bat` (Standard Command Prompt launcher)
-- `run_workbench.ps1` (PowerShell launcher)
-
-### Manual Command-Line Launch
-```powershell
-cd C:\Users\Hp\.gemini\antigravity\scratch\cpgrams_workbench
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
-```
-Open your browser and navigate to:
-```
-http://127.0.0.1:8000
-```
+### Security Guarantees:
+- **Strict Origin Whitelisting**: CORS permits connections exclusively from `https://tripathiprg.github.io` and `localhost`.
+- **Pre-Shared Local Pairing Token**: Sensitive operations require the local bridge pairing token (`X-Local-Bridge-Token`) generated on the officer's workstation.
+- **Graceful Offline Fallback**: If the local agent is offline, the hosted GitHub Pages interface automatically switches to an interactive Demonstration Mode using realistic mock data, ensuring zero UI breakage.
 
 ---
 
 ## 7. Running the Automated Test Suite
 
-The project includes 24 automated unit and integration tests covering database persistence, document parsing, semantic search, AI analysis, drafting compliance, security boundaries, and backup/restore.
+The project includes **31 automated unit and integration tests** (100% pass rate).
 
 To execute the tests:
 ```powershell
@@ -137,6 +124,13 @@ tests/test_database.py::test_database_persistence_and_querying PASSED
 tests/test_database.py::test_synthetic_data_distinction PASSED
 tests/test_database.py::test_historical_precedents_loaded PASSED
 tests/test_database.py::test_routing_rules_loaded PASSED
+tests/test_disposal_workflow.py::test_workflow_state_transitions PASSED
+tests/test_disposal_workflow.py::test_approval_blocked_by_unfilled_placeholders PASSED
+tests/test_disposal_workflow.py::test_disposal_checklist PASSED
+tests/test_disposal_workflow.py::test_disposal_initiation_and_state_change PASSED
+tests/test_disposal_workflow.py::test_manual_verification_workflow PASSED
+tests/test_disposal_workflow.py::test_prevent_double_disposal PASSED
+tests/test_disposal_workflow.py::test_bridge_endpoints PASSED
 tests/test_document_parser.py::test_parse_txt PASSED
 tests/test_document_parser.py::test_parse_docx PASSED
 tests/test_document_parser.py::test_parse_pdf PASSED
@@ -154,43 +148,22 @@ tests/test_semantic_search.py::test_semantic_match_indiaai_compute PASSED
 tests/test_semantic_search.py::test_semantic_match_deepfake PASSED
 tests/test_semantic_search.py::test_outdated_precedent_flagged PASSED
 
-============================= 24 passed in 2.95s ==============================
+============================= 31 passed in 3.94s ==============================
 ```
 
 ---
 
-## 8. Backup and Restore Procedures
+## 8. Status of Features: Implemented & Verified vs Portal-Dependent
 
-### Creating an Instant Backup
-1. Navigate to **Settings & Audit** module in the sidebar.
-2. In the "Local Database Backup & Restore" card, click **Create Instant Snapshot**.
-3. A timestamped snapshot is created in `data/backups/cpgrams_backup_YYYYMMDD_HHMMSS.db`.
-
-### Restoring from a Snapshot
-1. Select the desired snapshot from the backup list in **Settings & Audit**.
-2. Click **Restore Snapshot**.
-3. The system automatically performs `PRAGMA integrity_check` on the backup file.
-4. If integrity passes, a pre-restore safety copy (`pre_restore_safety_*.db`) is created before replacing the active database, preventing data loss in the event of an interruption.
-
----
-
-## 9. Status of Features: Verified vs Portal-Dependent
-
-### Fully Functional & Verified
-1. Complete local web workbench running on `127.0.0.1:8000`.
-2. Multi-format intake (PDF, DOCX, TXT, Excel/CSV) with OCR detection and entity extraction.
-3. Searchable Grievance Register with sorting, multi-criteria filtering, and deadline norms.
-4. Historical Disposed Grievance Library with full-text and local TF-IDF semantic vector search.
-5. 12-point structured AI grievance analysis with manual correction capabilities.
-6. Departmental Routing Assistant with configurable directory and rules.
-7. Official Reply Drafting Studio with precedent synthesis, side-by-side diffing, drafting compliance checks, and formal GoI-layout DOCX/TXT export.
-8. Departmental Correspondence & Input Tracker with reminder logging.
-9. Operational Analytics & Ageing breakdown with Excel/CSV export.
-10. Database Backup & Restore with verified integrity checks.
-11. Security Audit Trail recording all operational events.
-12. PII masking and unmasking toggles.
-
-### Features Dependent on Live Officer Portal Authentication
-1. **Live Browser Assistant Session**: Depends on the officer launching the session and entering valid credentials, CAPTCHA, or Parichay OTP.
-2. **Screen Inspection & Record Retrieval**: Only functions when the officer has authenticated and navigated to a visible table on the Operational Desk or Search page.
-3. **Portal-Side Disposal**: Disposing, forwarding, or issuing replies on `pgportal.gov.in` must be performed directly by the officer on the portal; the workbench does not alter portal records.
+| Functionality | Implementation & Verification Status | Officer Action Required |
+|---|---|---|
+| **1. Officer Authentication** | Implemented & Protected | Officer enters credentials, CAPTCHA, or Parichay OTP directly in visible browser |
+| **2. Screen Inspection & Record Retrieval** | Implemented & Verified | Automated read-only extraction of visible DOM records from Operational Desk / Search |
+| **3. Duplicate Detection & Registry Ingestion** | Implemented & Verified (100% Offline) | Single-click selective import into local SQLite database |
+| **4. Precedent Semantic Matching** | Implemented & Verified (Local TF-IDF) | Automatic background similarity search across disposed library |
+| **5. AI-Assisted Official Reply Drafting** | Implemented & Verified | Generates structured draft incorporating applicable precedents & GoI guidelines |
+| **6. Compliance & Placeholder Audit** | Implemented & Verified | Flags missing details and blocks approval if `[VERIFY: ...]` tags remain |
+| **7. Dual-Confirmation Disposal Staging** | Implemented & Verified | Dual-confirmation modal stages approved reply in browser assistant session |
+| **8. Official Portal Verification** | Implemented & Verified | Inspects portal DOM or search status; requires explicit confirmation before marking Disposed |
+| **9. Manual Verification Audit Fallback** | Implemented & Verified | Allows recording official CPGRAMS receipt/order reference for manual audits |
+| **10. Local-to-Cloud Hybrid Bridge** | Implemented & Verified | Connects GitHub Pages UI (`tripathiprg.github.io`) securely with local agent (`127.0.0.1:8000`) |

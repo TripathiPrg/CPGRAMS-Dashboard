@@ -61,9 +61,11 @@ def create_draft(
     )
     db.add(new_draft)
 
-    # Update grievance status if it was New
+    # Update grievance status and workflow state
     if g.status in ["New", "Under Examination"]:
         g.status = "Draft Prepared"
+    if g.workflow_state in ["Retrieved", "Analysis complete"]:
+        g.workflow_state = "Draft generated"
 
     db.commit()
     db.refresh(new_draft)
@@ -106,6 +108,11 @@ def update_draft(
     if compliance_issues:
         notes = " | ".join(f"[{i['severity']}] {i['message']}" for i in compliance_issues)
         d.compliance_notes = notes
+
+    # Advance workflow state to 'Awaiting review'
+    g_parent = db.query(Grievance).filter(Grievance.id == d.grievance_id).first()
+    if g_parent and g_parent.workflow_state in ["Retrieved", "Analysis complete", "Draft generated"]:
+        g_parent.workflow_state = "Awaiting review"
 
     db.commit()
 
@@ -158,10 +165,11 @@ def approve_draft(
     d.approved_by = approver
     d.approval_timestamp = datetime.utcnow()
 
-    # Update parent grievance status
+    # Update parent grievance status and workflow state
     g = db.query(Grievance).filter(Grievance.id == d.grievance_id).first()
     if g:
         g.status = "Approved for Disposal"
+        g.workflow_state = "Approved for submission"
 
     db.commit()
 

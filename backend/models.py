@@ -33,6 +33,21 @@ class Grievance(Base):
     recommended_action = Column(String(200), nullable=True)
     priority = Column(String(50), default="Normal", nullable=False)  # 'Urgent', 'High', 'Normal', 'Low'
     target_disposal_date = Column(Date, nullable=True)
+
+    # 9-Stage Operational Workflow State:
+    # 'Retrieved', 'Analysis complete', 'Draft generated', 'Awaiting review',
+    # 'Approved for submission', 'Submission in progress', 'Official submission confirmed',
+    # 'Submission failed', 'Status requires verification'
+    workflow_state = Column(String(50), default="Retrieved", index=True, nullable=False)
+
+    # Portal Submission & Verification Audit Fields
+    # Strict rule: Never marked 'Disposed' or 'Official submission confirmed' without verified portal response
+    portal_action_timestamp = Column(DateTime, nullable=True)
+    portal_confirmation_id = Column(String(100), nullable=True)
+    verification_status = Column(String(50), default="unverified", nullable=False)  # 'unverified', 'verified_by_portal', 'verification_failed', 'status_requires_verification'
+    portal_reply_recorded = Column(Text, nullable=True)
+    disposal_category = Column(String(100), nullable=True)
+    disposal_remarks = Column(Text, nullable=True)
     
     # Audit & Provenance
     is_sample = Column(Boolean, default=False, nullable=False)  # Clearly labels synthetic test data

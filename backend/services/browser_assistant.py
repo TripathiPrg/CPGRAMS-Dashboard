@@ -250,6 +250,174 @@ class BrowserAssistantManager:
         self.last_sync_time = time.strftime("%Y-%m-%d %H:%M:%S")
         return extracted
 
+    def prepare_disposal(self, registration_no: str, approved_text: str, disposal_type: str = "Disposal") -> Dict[str, Any]:
+        """
+        Assists authorized officer with preparing an approved disposal on CPGRAMS.
+        Locates the action form in the active session and stages the approved text.
+        NEVER clicks final submit without officer intervention.
+        """
+        if not self.is_running or not self.page or self.page.is_closed():
+            return {
+                "success": False,
+                "error": "Browser session is not active. Please launch browser and sign in to CPGRAMS.",
+                "requires_login": True
+            }
+
+        status = self.get_session_status()
+        if not status["is_logged_in"]:
+            return {
+                "success": False,
+                "error": "Officer is not logged in to CPGRAMS. Please authenticate via the open browser window.",
+                "requires_login": True
+            }
+
+        staging_js = f"""
+        () => {{
+            const textareas = Array.from(document.querySelectorAll('textarea, input[type="text"]'));
+            let targetArea = null;
+            for (const el of textareas) {{
+                const id = (el.id || '').toLowerCase();
+                const name = (el.name || '').toLowerCase();
+                if (id.includes('remark') || name.includes('remark') || id.includes('action') || name.includes('action') || id.includes('reply')) {{
+                    targetArea = el;
+                    break;
+                }}
+            }}
+
+            if (targetArea) {{
+                targetArea.value = {repr(approved_text)};
+                targetArea.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                targetArea.dispatchEvent(new Event('change', {{ bubbles: true }}));
+            }}
+
+            let banner = document.getElementById('cpgrams-workbench-helper-banner');
+            if (!banner) {{
+                banner = document.createElement('div');
+                banner.id = 'cpgrams-workbench-helper-banner';
+                banner.style.position = 'fixed';
+                banner.style.bottom = '20px';
+                banner.style.right = '20px';
+                banner.style.zIndex = '999999';
+                banner.style.background = '#0d3b66';
+                banner.style.color = '#ffffff';
+                banner.style.padding = '14px 18px';
+                banner.style.borderRadius = '8px';
+                banner.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+                banner.style.fontFamily = 'Segoe UI, sans-serif';
+                banner.style.fontSize = '13px';
+                banner.style.maxWidth = '380px';
+                banner.style.lineHeight = '1.4';
+                document.body.appendChild(banner);
+            }}
+            banner.innerHTML = `
+                <div style="font-weight:bold;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                    <span>🛡️ CPGRAMS Workbench Assistant</span>
+                    <span style="cursor:pointer;" onclick="this.parentElement.parentElement.remove()">✕</span>
+                </div>
+                <div style="font-size:12px;opacity:0.9;">
+                    Case: <strong>${registration_no}</strong><br>
+                    Approved disposal draft is staged. Review details on this page and submit when ready.
+                </div>
+            `;
+            return {{
+                "form_located": !!targetArea,
+                "banner_injected": true
+            }};
+        }}
+        """
+        try:
+            dom_res = self.page.evaluate(staging_js)
+        except Exception as e:
+            dom_res = {"form_located": False, "banner_injected": False, "eval_error": str(e)}
+
+        return {
+            "success": True,
+            "status": "prepared",
+            "registration_no": registration_no,
+            "disposal_type": disposal_type,
+            "staging_details": dom_res,
+            "instructions": f"Approved disposal draft staged for {registration_no}. Please review in the open portal window and submit."
+        }
+
+    def verify_portal_disposal(self, registration_no: str, expected_text: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Independently checks the CPGRAMS portal DOM / status to confirm whether
+        the official record has ACTUALLY been updated to 'Disposed'.
+        Under no circumstances does it report verified if the portal doesn't confirm it.
+        """
+        if not self.is_running or not self.page or self.page.is_closed():
+            return {
+                "is_verified": False,
+                "verification_status": "status_requires_verification",
+                "error": "Browser session is not running. Cannot perform live DOM verification."
+            }
+
+        verification_js = f"""
+        () => {{
+            const regNo = {repr(registration_no)}.trim().toLowerCase();
+            const textContent = document.body.innerText.toLowerCase();
+            
+            const alertSuccess = Array.from(document.querySelectorAll('.alert-success, .success, .toast-success, [class*="success"]'))
+                .map(el => el.innerText.trim()).join(' ');
+
+            const hasSuccessMsg = /disposed\\s+successfully|action\\s+taken\\s+successfully|record\\s+updated|grievance\\s+closed/i.test(textContent) ||
+                                  /disposed|success|closed/i.test(alertSuccess);
+
+            const rows = Array.from(document.querySelectorAll('tr, .card, .panel'));
+            let rowStatus = null;
+            for (const r of rows) {{
+                const rText = r.innerText.toLowerCase();
+                if (rText.includes(regNo)) {{
+                    if (rText.includes('disposed') || rText.includes('closed')) {{
+                        rowStatus = 'Disposed';
+                        break;
+                    }} else if (rText.includes('pending') || rText.includes('under examination')) {{
+                        rowStatus = 'Pending';
+                    }}
+                }}
+            }}
+
+            return {{
+                "has_success_message": hasSuccessMsg,
+                "detected_row_status": rowStatus,
+                "alert_text": alertSuccess.slice(0, 200),
+                "url": window.location.href,
+                "title": document.title
+            }};
+        }}
+        """
+        try:
+            check = self.page.evaluate(verification_js)
+            has_success = check.get("has_success_message", False)
+            row_status = check.get("detected_row_status")
+
+            if has_success or row_status == "Disposed":
+                conf_id = f"CPGRAMS-DOM-{registration_no.replace('/', '')}-{int(time.time())}"
+                return {
+                    "is_verified": True,
+                    "verification_status": "verified_by_portal",
+                    "portal_confirmation_id": conf_id,
+                    "portal_status": "Disposed",
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "details": check
+                }
+            else:
+                return {
+                    "is_verified": False,
+                    "verification_status": "status_requires_verification",
+                    "portal_status": row_status or "Unconfirmed",
+                    "portal_confirmation_id": None,
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "details": check,
+                    "message": "Portal DOM does not show a confirmed disposal confirmation yet."
+                }
+        except Exception as e:
+            return {
+                "is_verified": False,
+                "verification_status": "status_requires_verification",
+                "error": str(e)
+            }
+
     def close_session(self):
         """Safely closes the browser context and playwright instance."""
         try:

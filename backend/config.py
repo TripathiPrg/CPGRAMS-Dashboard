@@ -61,3 +61,20 @@ AI_MODE = "local_heuristic"  # 'local_heuristic', 'local_ollama'
 OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 OLLAMA_MODEL = "llama3:latest"
 SIMILARITY_THRESHOLD = 0.25  # Minimum TF-IDF cosine score to consider a relevant precedent
+
+# Secure Hybrid Bridge Settings
+# Authenticates requests from public GitHub Pages frontend (tripathiprg.github.io)
+TOKEN_FILE = DATA_DIR / "local_bridge_token.key"
+if TOKEN_FILE.exists():
+    LOCAL_BRIDGE_TOKEN = TOKEN_FILE.read_text(encoding="utf-8").strip()
+else:
+    import secrets
+    LOCAL_BRIDGE_TOKEN = secrets.token_urlsafe(24)
+    TOKEN_FILE.write_text(LOCAL_BRIDGE_TOKEN, encoding="utf-8")
+
+ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8501",
+    "https://tripathiprg.github.io",
+]

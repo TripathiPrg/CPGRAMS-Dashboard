@@ -160,10 +160,17 @@ def get_grievance_detail(
             "grievance_text": g.grievance_text,
             "requested_relief": g.requested_relief,
             "status": g.status,
+            "workflow_state": g.workflow_state or "Retrieved",
             "recommended_action": g.recommended_action,
             "priority": g.priority,
             "target_disposal_date": g.target_disposal_date.isoformat() if g.target_disposal_date else None,
             "days_remaining": days_remaining,
+            "portal_action_timestamp": g.portal_action_timestamp.isoformat() if g.portal_action_timestamp else None,
+            "portal_confirmation_id": g.portal_confirmation_id,
+            "verification_status": g.verification_status or "unverified",
+            "portal_reply_recorded": g.portal_reply_recorded,
+            "disposal_category": g.disposal_category,
+            "disposal_remarks": g.disposal_remarks,
             "is_sample": g.is_sample,
             "source_type": g.source_type,
             "created_at": g.created_at.isoformat(),
@@ -216,18 +223,20 @@ def trigger_analysis(id: int, db: Session = Depends(get_db)):
         requested_relief=g.requested_relief
     )
 
+    valid_data = {k: v for k, v in res.items() if hasattr(GrievanceAnalysis, k)}
     existing_analysis = db.query(GrievanceAnalysis).filter(GrievanceAnalysis.grievance_id == id).first()
     if existing_analysis:
-        for k, v in res.items():
-            if hasattr(existing_analysis, k):
-                setattr(existing_analysis, k, v)
+        for k, v in valid_data.items():
+            setattr(existing_analysis, k, v)
         existing_analysis.is_manually_corrected = False
         target_entry = existing_analysis
     else:
-        target_entry = GrievanceAnalysis(grievance_id=id, **res)
+        target_entry = GrievanceAnalysis(grievance_id=id, **valid_data)
         db.add(target_entry)
 
     g.recommended_action = res["recommended_next_action"]
+    if g.workflow_state in ["Retrieved", "New"]:
+        g.workflow_state = "Analysis complete"
     db.commit()
 
     log_event(

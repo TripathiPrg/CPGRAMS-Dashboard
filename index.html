@@ -74,9 +74,9 @@
           <span class="badge-division">AI & Emerging Technologies Division</span>
         </div>
         <div class="top-header-right">
-          <div class="security-pill">
-            <span class="security-pill-dot"></span>
-            <span>Local Offline Mode</span>
+          <div id="bridge-status-pill" class="security-pill" style="cursor: pointer;" onclick="App.openBridgeModal()" title="Click to view Local Integration Agent pairing status">
+            <span id="bridge-pill-dot" class="security-pill-dot"></span>
+            <span id="bridge-pill-text">Local Agent: Checking...</span>
           </div>
           <button id="pii-toggle-btn" class="pii-toggle-btn" title="Toggle Privacy Masking for Applicant Names & Contacts">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
@@ -464,8 +464,8 @@
                     <th>Received</th>
                     <th>Applicant</th>
                     <th>Category</th>
-                    <th>Status</th>
-                    <th>Priority</th>
+                    <th>Portal Status</th>
+                    <th>Workflow State</th>
                     <th>Deadline Norm</th>
                     <th>Actions</th>
                   </tr>
@@ -509,6 +509,7 @@
                 </div>
               </div>
               <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="case-header-workflow-badge"></span>
                 <span id="case-header-status-badge"></span>
                 <span id="case-header-deadline-badge"></span>
               </div>
@@ -516,7 +517,7 @@
           </div>
 
           <!-- Case Workspace Tabs -->
-          <div style="display: flex; gap: 6px; border-bottom: 2px solid var(--border-color); margin-bottom: 16px;">
+          <div style="display: flex; gap: 6px; border-bottom: 2px solid var(--border-color); margin-bottom: 16px; overflow-x: auto;">
             <button class="btn btn-outline case-tab active" data-tab="tab-case-narrative" onclick="CaseWorkspace.switchTab('tab-case-narrative')">
               1. Case Narrative & Details
             </button>
@@ -534,6 +535,9 @@
             </button>
             <button class="btn btn-outline case-tab" data-tab="tab-case-history" onclick="CaseWorkspace.switchTab('tab-case-history')">
               6. Audit & Action History
+            </button>
+            <button class="btn btn-outline case-tab" data-tab="tab-case-disposal" onclick="CaseWorkspace.switchTab('tab-case-disposal')">
+              7. Official Portal Disposal & Verification
             </button>
           </div>
 
@@ -742,6 +746,104 @@
                   </thead>
                   <tbody id="case-audit-tbody"></tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 7: Official Portal Disposal & Verification (9-State Workflow) -->
+          <div id="tab-case-disposal" class="case-tab-content" style="display: none;">
+            <!-- 9-Stage Operational Workflow Visual Pipeline -->
+            <div class="card" style="margin-bottom: 16px;">
+              <div class="card-header">
+                <div class="card-title">CPGRAMS 9-Stage Operational Workflow Pipeline</div>
+                <span id="disposal-state-badge" class="badge badge-exam">Workflow State: Retrieved</span>
+              </div>
+              <div class="workflow-stepper">
+                <div class="step-item" id="step-retrieved"><span class="step-circle">1</span><span>Retrieved</span></div>
+                <div class="step-arrow">→</div>
+                <div class="step-item" id="step-analyzed"><span class="step-circle">2</span><span>Analyzed</span></div>
+                <div class="step-arrow">→</div>
+                <div class="step-item" id="step-drafted"><span class="step-circle">3</span><span>Draft Prepared</span></div>
+                <div class="step-arrow">→</div>
+                <div class="step-item" id="step-reviewing"><span class="step-circle">4</span><span>Under Review</span></div>
+                <div class="step-arrow">→</div>
+                <div class="step-item" id="step-approved"><span class="step-circle">5</span><span>Approved</span></div>
+                <div class="step-arrow">→</div>
+                <div class="step-item" id="step-submitting"><span class="step-circle">6</span><span>Submitting</span></div>
+                <div class="step-arrow">→</div>
+                <div class="step-item" id="step-confirmed"><span class="step-circle">7</span><span>Official Confirmed</span></div>
+              </div>
+            </div>
+
+            <!-- Pre-submission Verification Checklist & Staging Actions -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <!-- Left: Checklist -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Pre-Disposal Compliance Checklist</div>
+                  <button class="btn btn-outline" style="font-size: 11px; padding: 3px 6px;" onclick="DisposalManager.refreshChecklist()">Refresh Checks</button>
+                </div>
+                <div id="disposal-checklist-items" style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- Dynamic check items -->
+                </div>
+                <div class="alert-banner alert-warning" style="margin-top: 14px; font-size: 12px; padding: 8px 12px;">
+                  <strong>Strict MeitY Rule:</strong> A case is never marked as Disposed in the dashboard until verified by the official CPGRAMS portal DOM or confirmed with an official disposal receipt reference.
+                </div>
+              </div>
+
+              <!-- Right: Disposal Action Controls -->
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">Authorized Disposal Action</div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Disposal Category:</label>
+                  <select id="disposal-category-select" class="form-control">
+                    <option value="Closed with reply">Closed with reply (Official disposal with substantive reply)</option>
+                    <option value="Transferred to other Ministry / Department">Transferred to other Ministry / Department</option>
+                    <option value="Sub-judice / Ineligible Matter">Sub-judice / Outside Scope of CPGRAMS</option>
+                    <option value="Interim Reply / Substantive Action in Progress">Interim Reply / Substantive Action in Progress</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Disposal Remarks / Action Summary:</label>
+                  <textarea id="disposal-remarks-input" class="form-control" style="min-height: 70px; font-size: 13px;" placeholder="Enter official disposal remarks or notes for audit trail..."></textarea>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+                  <button id="btn-initiate-disposal" class="btn btn-primary" style="width: 100%; justify-content: center; font-weight: 700; background: #27ae60;" onclick="DisposalManager.openDualConfirmModal()">
+                    🚀 Initiate Verified Portal Disposal
+                  </button>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-outline" style="flex: 1; font-size: 11.5px; padding: 6px 4px;" onclick="DisposalManager.verifyPortalStatus()">
+                      🔍 Check Portal Status
+                    </button>
+                    <button class="btn btn-outline" style="flex: 1; font-size: 11.5px; padding: 6px 4px;" onclick="DisposalManager.openManualVerifyModal()">
+                      📝 Manual Audit Verify
+                    </button>
+                    <button class="btn btn-outline" style="font-size: 11.5px; padding: 6px 4px; color: #c0392b;" onclick="DisposalManager.abortStaging()">
+                      Cancel Staging
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Portal Verification Details Card -->
+            <div id="disposal-receipt-card" class="card" style="margin-top: 16px; display: none;">
+              <div class="card-header" style="background: #e8f8f5; border-bottom: 1px solid #a3e4d7;">
+                <div class="card-title" style="color: #0e6251;">🛡️ Official CPGRAMS Disposal Verification Receipt</div>
+                <span class="badge badge-approved">Official Record Updated</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                <div><span style="font-size: 12px; color: var(--text-muted);">Registration No:</span><div id="receipt-reg-no" style="font-weight: 700;"></div></div>
+                <div><span style="font-size: 12px; color: var(--text-muted);">Portal Confirmation ID:</span><div id="receipt-conf-id" style="font-weight: 700; color: #16a085;"></div></div>
+                <div><span style="font-size: 12px; color: var(--text-muted);">Verification Timestamp:</span><div id="receipt-timestamp" style="font-weight: 700;"></div></div>
+                <div><span style="font-size: 12px; color: var(--text-muted);">Verification Method:</span><div id="receipt-method" style="font-weight: 700;"></div></div>
+              </div>
+              <div>
+                <span style="font-size: 12px; color: var(--text-muted);">Verified Reply Text Recorded on CPGRAMS:</span>
+                <div id="receipt-reply-text" style="background: #ffffff; padding: 10px; border: 1px solid #d1f2eb; border-radius: 4px; font-size: 13px; max-height: 150px; overflow-y: auto; white-space: pre-wrap; margin-top: 4px;"></div>
               </div>
             </div>
           </div>
@@ -1128,6 +1230,95 @@
     </div>
   </div>
 
+  <!-- Dual-Confirmation Disposal Modal -->
+  <div id="disposal-confirm-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header" style="background: #1b2a47; color: white;">
+        <div class="card-title" style="color: white;">CONFIRM AUTHORIZED CPGRAMS DISPOSAL ACTION</div>
+        <button class="modal-close" style="color: white;" onclick="DisposalManager.closeDualConfirmModal()">✕</button>
+      </div>
+      <div style="padding: 16px 20px;">
+        <div class="alert-banner alert-warning" style="margin-bottom: 14px;">
+          <div>
+            <strong>IMPORTANT NOTICE:</strong> You are about to initiate an official disposal action for case <strong id="modal-confirm-reg"></strong>. 
+            This action will stage the approved reply directly into your official CPGRAMS session.
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label class="form-label">Approved Reply Preview (Text being submitted):</label>
+          <div id="modal-confirm-reply-preview" style="max-height: 180px; overflow-y: auto; background: #f8fafc; padding: 10px; border: 1px solid var(--border-color); font-size: 12.5px; white-space: pre-wrap; border-radius: 4px;"></div>
+        </div>
+        <div style="margin-bottom: 16px; background: #fdfefe; border: 1px solid #ebedef; padding: 10px; border-radius: 4px; font-size: 12px;">
+          <label style="display: flex; gap: 8px; align-items: flex-start; cursor: pointer;">
+            <input type="checkbox" id="modal-confirm-ack" style="margin-top: 2px;">
+            <span>I confirm that I have verified the case facts, the draft has been approved by the competent authority in MeitY, and the reply conforms to Government of India guidelines. I authorize initiating this action.</span>
+          </label>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-outline" onclick="DisposalManager.closeDualConfirmModal()">Cancel</button>
+          <button id="modal-confirm-submit-btn" class="btn btn-primary" style="background: #27ae60;" onclick="DisposalManager.executeInitiation()">Authorize & Stage Disposal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Audit Verification Modal -->
+  <div id="disposal-manual-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 500px;">
+      <div class="modal-header">
+        <div class="card-title">Manual Officer Audit Verification</div>
+        <button class="modal-close" onclick="DisposalManager.closeManualVerifyModal()">✕</button>
+      </div>
+      <div style="padding: 16px 20px;">
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
+          If you have completed the disposal directly in your open CPGRAMS browser window, record the official portal transaction/receipt reference below to verify and finalize the case in your register.
+        </p>
+        <div class="form-group">
+          <label class="form-label">CPGRAMS Confirmation Reference / Receipt No: *</label>
+          <input type="text" id="manual-verify-conf-id" class="form-control" placeholder="e.g. CPGRAMS-DISP-2026-98124 or Order Ref">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Officer Audit Notes / Remarks:</label>
+          <textarea id="manual-verify-notes" class="form-control" style="min-height: 60px;" placeholder="Optional remarks on portal submission..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+          <button class="btn btn-outline" onclick="DisposalManager.closeManualVerifyModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="DisposalManager.submitManualVerification()">Confirm Verification Audit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Local Agent Bridge Modal -->
+  <div id="bridge-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="card-title">Local Integration Agent Pairing</div>
+        <button class="modal-close" onclick="App.closeBridgeModal()">✕</button>
+      </div>
+      <div style="padding: 16px 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding: 12px; background: #f8fafc; border-radius: 6px;">
+          <div id="bridge-modal-status-dot" style="width: 14px; height: 14px; border-radius: 50%; background: #27ae60;"></div>
+          <div>
+            <div id="bridge-modal-status-title" style="font-weight: 700; font-size: 14px;">Connected to Local Agent</div>
+            <div id="bridge-modal-status-desc" style="font-size: 12px; color: var(--text-muted);">http://127.0.0.1:8000</div>
+          </div>
+        </div>
+        <p style="font-size: 12.5px; line-height: 1.5; color: var(--text-muted); margin-bottom: 12px;">
+          The CPGRAMS Personal Workbench uses a secure local bridge. When using this dashboard on GitHub Pages, the browser communicates strictly with your local workstation (<code>127.0.0.1:8000</code>). No sensitive grievance text or credentials ever leave your machine.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Local Agent Bridge Token (Pairing Key):</label>
+          <input type="text" id="bridge-token-input" class="form-control" placeholder="Enter your local agent token...">
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+          <button class="btn btn-outline" onclick="App.testBridgeConnection()">Re-test Local Connection</button>
+          <button class="btn btn-primary" onclick="App.saveBridgeToken()">Save Pairing Key</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Load Application Scripts -->
   <script src="js/mock_data.js"></script>
   <script src="js/app.js"></script>
@@ -1136,6 +1327,7 @@
   <script src="js/register.js"></script>
   <script src="js/precedents.js"></script>
   <script src="js/drafting.js"></script>
+  <script src="js/disposal.js"></script>
   <script src="js/correspondence.js"></script>
   <script src="js/reports.js"></script>
   <script src="js/settings.js"></script>

@@ -3,7 +3,7 @@ Pydantic Schemas for Request Validation and Response Serialization
 """
 
 from datetime import datetime, date
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
 from pydantic import BaseModel, Field
 
 # Grievance Schemas
@@ -19,11 +19,18 @@ class GrievanceBase(BaseModel):
     grievance_text: str
     requested_relief: Optional[str] = None
     status: str = "New"
+    workflow_state: str = "Retrieved"
     recommended_action: Optional[str] = None
     priority: str = "Normal"
     target_disposal_date: Optional[date] = None
     is_sample: bool = False
     source_type: str = "portal_assisted"
+    portal_action_timestamp: Optional[datetime] = None
+    portal_confirmation_id: Optional[str] = None
+    verification_status: str = "unverified"
+    portal_reply_recorded: Optional[str] = None
+    disposal_category: Optional[str] = None
+    disposal_remarks: Optional[str] = None
 
 class GrievanceCreate(GrievanceBase):
     pass
@@ -37,9 +44,16 @@ class GrievanceUpdate(BaseModel):
     grievance_text: Optional[str] = None
     requested_relief: Optional[str] = None
     status: Optional[str] = None
+    workflow_state: Optional[str] = None
     recommended_action: Optional[str] = None
     priority: Optional[str] = None
     target_disposal_date: Optional[date] = None
+    portal_action_timestamp: Optional[datetime] = None
+    portal_confirmation_id: Optional[str] = None
+    verification_status: Optional[str] = None
+    portal_reply_recorded: Optional[str] = None
+    disposal_category: Optional[str] = None
+    disposal_remarks: Optional[str] = None
 
 class GrievanceResponse(GrievanceBase):
     id: int
@@ -50,6 +64,29 @@ class GrievanceResponse(GrievanceBase):
 
     class Config:
         from_attributes = True
+
+# Disposal Workflow Schemas
+class DisposalInitiateRequest(BaseModel):
+    grievance_id: int
+    draft_id: int
+    disposal_category: str = "Closed with reply"
+    disposal_remarks: Optional[str] = None
+    confirmed_by_officer: bool = True
+
+class DisposalVerifyRequest(BaseModel):
+    grievance_id: int
+    portal_confirmation_id: Optional[str] = None
+    verification_notes: Optional[str] = None
+
+class DisposalResultResponse(BaseModel):
+    grievance_id: int
+    registration_no: str
+    workflow_state: str
+    is_verified: bool
+    portal_confirmation_id: Optional[str] = None
+    portal_action_timestamp: Optional[datetime] = None
+    message: str
+    verification_details: Dict[str, Any] = {}
 
 # Precedent Schemas
 class PrecedentBase(BaseModel):
