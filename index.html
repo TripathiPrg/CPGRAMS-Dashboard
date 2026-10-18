@@ -102,47 +102,55 @@
             </div>
           </div>
 
-          <!-- Stats Grid -->
+          <!-- Stats Grid with Click-to-Filter Action -->
           <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card active-filter" id="card-filter-all" onclick="App.filterDashboardList('all')" title="Click to show all active grievances">
               <div class="stat-label">Total Grievances</div>
               <div class="stat-value" id="stat-total">0</div>
               <div class="stat-subtitle">All active & disposed cases</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="card-filter-new" onclick="App.filterDashboardList('new')" title="Click to show new grievances">
               <div class="stat-label">New Grievances</div>
               <div class="stat-value" id="stat-new">0</div>
               <div class="stat-subtitle">Awaiting initial action</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="card-filter-pending" onclick="App.filterDashboardList('pending')" title="Click to show pending grievances">
               <div class="stat-label">Pending Examination</div>
               <div class="stat-value" id="stat-pending">0</div>
               <div class="stat-subtitle">Under active review</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card disposed">
+            <div class="stat-card disposed" id="card-filter-disposed" onclick="App.filterDashboardList('disposed')" title="Click to show disposed cases">
               <div class="stat-label">Disposed / Approved</div>
               <div class="stat-value" id="stat-disposed">0</div>
               <div class="stat-subtitle">Disposals completed</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="card-filter-inputs" onclick="App.filterDashboardList('inputs')" title="Click to show cases awaiting departmental inputs">
               <div class="stat-label">Awaiting Dept Inputs</div>
               <div class="stat-value" id="stat-inputs">0</div>
               <div class="stat-subtitle">Inter-divisional calls</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="card-filter-drafts" onclick="App.filterDashboardList('drafts')" title="Click to show drafts awaiting review">
               <div class="stat-label">Drafts Under Review</div>
               <div class="stat-value" id="stat-drafts">0</div>
               <div class="stat-subtitle">Ready for officer check</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card approaching">
+            <div class="stat-card approaching" id="card-filter-approaching" onclick="App.filterDashboardList('approaching')" title="Click to show cases with approaching deadlines">
               <div class="stat-label">Approaching Deadline</div>
               <div class="stat-value" id="stat-approaching">0</div>
               <div class="stat-subtitle">&lt; 5 days remaining</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
-            <div class="stat-card urgent">
+            <div class="stat-card urgent" id="card-filter-urgent" onclick="App.filterDashboardList('urgent')" title="Click to show urgent cases">
               <div class="stat-label">Urgent / Overdue</div>
               <div class="stat-value" id="stat-urgent">0</div>
               <div class="stat-subtitle">Requires immediate action</div>
+              <div class="click-hint">Click to show list ↓</div>
             </div>
           </div>
 
@@ -166,6 +174,46 @@
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                 Export Register (Excel)
               </a>
+            </div>
+          </div>
+
+          <!-- Interactive Operational Desk Grievances Section -->
+          <div id="dash-grievances-card" class="card" style="border-left: 4px solid var(--meity-blue);">
+            <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div class="card-title" id="dash-list-heading" style="display: flex; align-items: center; gap: 10px;">
+                  <span>Active Operational Desk Grievances</span>
+                  <span id="dash-list-badge" class="badge badge-approved" style="font-size: 12px;">7 Cases</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 3px;">
+                  Official CPGRAMS grievances assigned to Pragati, Scientist B (Emerging Technologies and IOT). Click "Take Action" to open case examination and drafting.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px;" onclick="App.filterDashboardList('all')">Show All</button>
+                <button class="btn btn-outline" style="font-size: 11.5px; padding: 4px 10px; color: var(--meity-red); border-color: #f8d7da;" onclick="App.filterDashboardList('urgent')">Urgent (1)</button>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 5px 12px;" onclick="App.switchView('register')">View Full Register ➔</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Registration No</th>
+                    <th>Subject / Summary</th>
+                    <th>Complainant</th>
+                    <th>Date Received</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Workflow State</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-grievances-tbody">
+                  <tr><td colspan="8" style="text-align:center;">Loading operational grievances...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
 

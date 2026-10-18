@@ -183,6 +183,9 @@ const App = {
     });
   },
 
+  dashboardGrievances: [],
+  currentDashFilter: "all",
+
   async loadDashboardData() {
     let data = null;
     try {
@@ -227,6 +230,126 @@ const App = {
           </tr>
         `).join("");
       }
+    }
+
+    // Load operational grievances for the interactive table
+    let cases = null;
+    try {
+      if (!window.MockStore || !MockStore.isStaticMode) {
+        const resCases = await fetch(this.getApiUrl("/api/grievances?page_size=50&unmask_pii=" + !this.maskPII), { headers: this.getAuthHeaders() });
+        if (resCases.ok) {
+          const cData = await resCases.json();
+          cases = cData.items;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch cases from backend, using mock cases");
+    }
+
+    if (!cases && window.MockStore) {
+      cases = MockStore.grievances;
+    }
+
+    this.dashboardGrievances = cases || [];
+    this.filterDashboardList(this.currentDashFilter || "all", false);
+  },
+
+  filterDashboardList(filterType, scroll = true) {
+    this.currentDashFilter = filterType;
+
+    // 1. Update active card styling
+    document.querySelectorAll(".stats-grid .stat-card").forEach(c => c.classList.remove("active-filter"));
+    const activeCard = document.getElementById(`card-filter-${filterType}`);
+    if (activeCard) activeCard.classList.add("active-filter");
+
+    // 2. Filter records
+    let list = this.dashboardGrievances || [];
+    let title = "Active Operational Desk Grievances";
+
+    if (filterType === "new") {
+      list = list.filter(g => g.status === "New");
+      title = "New Grievances (Awaiting Initial Action)";
+    } else if (filterType === "pending") {
+      list = list.filter(g => g.status === "New" || g.status === "Under Examination");
+      title = "Pending Examination (Under Active Review)";
+    } else if (filterType === "urgent") {
+      list = list.filter(g => g.priority === "Urgent" || g.deadline_status === "OVERDUE");
+      title = "Urgent / Overdue Grievances (Immediate Action Required)";
+    } else if (filterType === "approaching") {
+      list = list.filter(g => g.deadline_status === "APPROACHING" || (g.days_remaining !== undefined && g.days_remaining <= 5));
+      title = "Grievances with Approaching Deadlines (< 5 Days Remaining)";
+    } else if (filterType === "disposed") {
+      list = list.filter(g => g.status === "Disposed" || g.workflow_state === "Official submission confirmed");
+      title = "Disposed / Approved Grievances";
+    } else if (filterType === "inputs") {
+      list = list.filter(g => g.status === "Awaiting Inputs");
+      title = "Grievances Awaiting Departmental Inputs";
+    } else if (filterType === "drafts") {
+      list = list.filter(g => g.status === "Draft Prepared" || g.workflow_state === "Awaiting review");
+      title = "Grievance Drafts Under Review";
+    }
+
+    // 3. Update header
+    const heading = document.getElementById("dash-list-heading");
+    if (heading) {
+      heading.innerHTML = `<span>${title}</span> <span id="dash-list-badge" class="badge badge-approved" style="font-size: 12px;">${list.length} Case${list.length === 1 ? '' : 's'}</span>`;
+    }
+
+    // 4. Render Table Rows
+    const tbody = document.getElementById("dash-grievances-tbody");
+    if (!tbody) return;
+
+    if (list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--text-muted);">No grievances match the "${filterType}" filter.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = list.map(g => {
+      const wfState = g.workflow_state || "Retrieved";
+      let wfBadgeClass = "badge-draft";
+      if (wfState === "Official submission confirmed") wfBadgeClass = "badge-approved";
+      else if (wfState === "Approved for submission") wfBadgeClass = "badge-inputs";
+      else if (wfState === "Submission in progress") wfBadgeClass = "badge-exam";
+      else if (wfState === "Status requires verification") wfBadgeClass = "badge-approaching";
+      else if (wfState === "Submission failed") wfBadgeClass = "badge-urgent";
+
+      const isUrgent = g.priority === "Urgent";
+      const priorityBadge = isUrgent
+        ? `<span class="badge badge-urgent" style="font-weight: 700;">URGENT</span>`
+        : `<span class="badge badge-exam">Normal</span>`;
+
+      const sourceBadge = g.source_desk ? `<span class="badge badge-sample" style="font-size: 10px; margin-left: 4px;">${g.source_desk}</span>` : "";
+      const applicant = this.maskPII && g.applicant_masked ? g.applicant_masked : (g.applicant_name || "Citizen");
+
+      return `
+        <tr>
+          <td>
+            <strong style="color: var(--meity-blue); font-size: 12.5px;">${g.registration_no}</strong>
+            ${sourceBadge}
+          </td>
+          <td>
+            <div style="font-weight: 600; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${g.subject}">
+              ${g.subject}
+            </div>
+          </td>
+          <td style="font-size: 12px;">${applicant}</td>
+          <td style="white-space: nowrap; font-size: 12px;">${g.date_received}</td>
+          <td style="font-size: 11.5px; color: var(--text-muted);">${g.category || 'Emerging Tech'}</td>
+          <td>${priorityBadge}</td>
+          <td><span class="badge ${wfBadgeClass}" style="font-size: 10.5px;">${wfState}</span></td>
+          <td>
+            <button class="btn btn-primary" style="padding: 4px 10px; font-size: 12px; font-weight: 600; white-space: nowrap;" onclick="CaseWorkspace.openCase(${g.id})">
+              Take Action ➔
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    // 5. Smooth scroll if requested
+    if (scroll) {
+      const card = document.getElementById("dash-grievances-card");
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   },
 

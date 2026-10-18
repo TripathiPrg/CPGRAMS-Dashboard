@@ -16,31 +16,76 @@ const CaseWorkspace = {
   },
 
   async loadCase(id) {
+    let data = null;
     try {
-      const url = App.getApiUrl(`/api/grievances/${id}?unmask_pii=${!App.maskPII}`);
-      const res = await fetch(url, { headers: App.getAuthHeaders() });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Failed to load case");
-
-      this.caseData = data;
-      this.renderCaseHeader(data.grievance);
-      this.renderNarrative(data.grievance);
-      this.renderAnalysis(data.analysis);
-      this.renderDrafts(data.drafts);
-      this.renderCorrespondence(data.correspondence);
-      this.renderAuditLogs(data.audit_logs);
-      
-      // Initialize disposal & verification module
-      if (window.DisposalManager) {
-        DisposalManager.initCaseDisposal(data);
+      if (!window.MockStore || !MockStore.isStaticMode) {
+        const url = App.getApiUrl(`/api/grievances/${id}?unmask_pii=${!App.maskPII}`);
+        const res = await fetch(url, { headers: App.getAuthHeaders() });
+        if (res.ok) data = await res.json();
       }
-
-      // Run automatic semantic precedent matching
-      this.runSemanticPrecedentSearch();
-
     } catch (e) {
-      alert(`Error loading case: ${e.message}`);
+      console.warn("API not reachable, using mock case data");
     }
+
+    if (!data && (window.MockStore || typeof MockStore !== "undefined")) {
+      const store = window.MockStore || MockStore;
+      const g = store.grievances.find(x => x.id === id || x.registration_no === id);
+      if (g) {
+        data = {
+          grievance: g,
+          analysis: {
+            summary: g.subject,
+            main_allegations: g.grievance_text,
+            exact_relief_requested: g.requested_relief || "Official examination by Emerging Technologies & IOT Division.",
+            relevant_facts_dates: `Received on ${g.date_received}. Mandate: Emerging Technologies & IOT.`,
+            policy_jurisdiction_issues: "Emerging Technologies and IOT Division mandate under MeitY Allocation of Business Rules.",
+            submission_type: "Public Grievance",
+            concerned_entity: "Emerging Technologies and IOT Division",
+            recommended_next_action: "Examine factual status, coordinate with relevant stakeholder/division, and formulate official response."
+          },
+          drafts: [
+            {
+              id: 101,
+              version_number: 1,
+              draft_text: `With reference to CPGRAMS registration number ${g.registration_no} filed by ${g.applicant_name}.\n\nThe matter has been examined in the Emerging Technologies and IOT Division, Ministry of Electronics and Information Technology (MeitY).\n\n[VERIFY: Insert factual examination and position of the Division on ${g.subject}].\n\nIn view of the above position, the grievance stands disposed of.`,
+              is_approved_by_user: false,
+              created_at: new Date().toISOString()
+            }
+          ],
+          correspondence: [],
+          audit_logs: [
+            {
+              timestamp: new Date().toISOString(),
+              event_type: "RECORD_SYNC",
+              entity_type: "Grievance",
+              details: `Synchronized ${g.registration_no} from Operational Desk.`,
+              actor: "Pragati (Scientist B, Emerging Technologies and IOT)"
+            }
+          ]
+        };
+      }
+    }
+
+    if (!data) {
+      alert(`Could not load case details for ID: ${id}`);
+      return;
+    }
+
+    this.caseData = data;
+    this.renderCaseHeader(data.grievance);
+    this.renderNarrative(data.grievance);
+    this.renderAnalysis(data.analysis);
+    this.renderDrafts(data.drafts);
+    this.renderCorrespondence(data.correspondence);
+    this.renderAuditLogs(data.audit_logs);
+    
+    // Initialize disposal & verification module
+    if (window.DisposalManager) {
+      DisposalManager.initCaseDisposal(data);
+    }
+
+    // Run automatic semantic precedent matching
+    this.runSemanticPrecedentSearch();
   },
 
   switchTab(tabId) {
